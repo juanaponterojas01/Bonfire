@@ -92,6 +92,7 @@ def generate_cover_letter(
         "- Length: 230 - 250 words\n"
         "- Output only the letter body (no date, no addresses \u2014 "
         "- Paragraph length: less than 50 words"
+        "- Use connectors between sentences so the text is more fluent by reading"
         "those are in the template)"
     )
 

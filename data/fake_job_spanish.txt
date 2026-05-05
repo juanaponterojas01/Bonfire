@@ -1,0 +1,33 @@
+Oferta de Empleo: Ingeniero de Simulación CFD - Sistemas Térmicos
+
+Empresa: Soluciones Térmicas Colombia S.A.S.
+Ubicación: Bogotá, Colombia
+Contacto: Señor Carlos Rodríguez, Gerente de Ingeniería
+
+Sobre nosotros:
+Soluciones Térmicas Colombia S.A.S. es una empresa líder en consultoría de ingeniería térmica y sistemas energéticos. Con más de 120 ingenieros en nuestras oficinas de Bogotá y Medellín, ofrecemos soluciones innovadoras para sectores automotriz, aeroespacial y energías renovables.
+
+Tus responsabilidades:
+• Realizar simulaciones CFD para sistemas térmicos utilizando OpenFOAM y ANSYS Fluent
+• Modelar y simular sistemas de gestión térmica de baterías con conceptos de refrigeración integrados
+• Diseñar y optimizar intercambiadores de calor y circuitos de refrigeración
+• Desarrollar scripts de automatización en Python para procesamiento de datos
+• Colaborar con el equipo experimental para validar resultados de simulación
+• Preparar documentación técnica y presentaciones para clientes
+
+Tu perfil:
+• Título de pregrado o posgrado en Ingeniería Mecánica, Ingeniería Energética o similar
+• Sólida experiencia en simulación CFD (OpenFOAM, ANSYS Fluent o similar)
+• Dominio de programación en Python
+• Fuerte comprensión de termodinámica y transferencia de calor
+• Experiencia con Modelica o MATLAB/Simulink es deseable
+• Excelentes habilidades de comunicación en español e inglés
+• Capacidad de trabajo en equipo, autonomía y pensamiento analítico
+
+Ofrecemos:
+• Proyectos desafiantes con clientes internacionales
+• Horario flexible y opciones de trabajo remoto
+• Capacitación continua y asistencia a conferencias
+• Salario competitivo y beneficios integrales
+
+¿Interesado? Envía tu hoja de vida a empleo@solucionestermicas.co

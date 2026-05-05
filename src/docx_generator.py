@@ -20,6 +20,13 @@ from src.models import JobDescription
 from src.utils import get_todays_date
 
 
+_GENERIC_GREETINGS = {
+    "en": "Dear hiring manager,",
+    "de": "Sehr geehrte Damen und Herren,",
+    "es": "A quien corresponda,",
+}
+
+
 def _replace_text_in_paragraph(paragraph: Paragraph, old_text: str, new_text: str) -> None:
     """Replace ``old_text`` with ``new_text`` in a single paragraph.
 
@@ -70,6 +77,49 @@ def _replace_text_in_docx(doc: Document, old_text: str, new_text: str) -> None:
                     _replace_text_in_paragraph(paragraph, old_text, new_text)
 
 
+def _build_greeting(job: JobDescription, language: str) -> str:
+    """Build the salutation line for a cover letter.
+
+    Uses a personalised formal greeting when *job.receiver_name* is present,
+    otherwise falls back to a language-specific generic greeting.
+
+    For German and Spanish, the function parses gender indicators that the LLM
+    prepended to the stored name (e.g. ``"Herr Dr. Mustermann"`` or
+    ``"Señora López"``) and adapts the adjective accordingly.
+
+    Args:
+        job: The job description, optionally including a contact person.
+        language: Language code (``"en"``, ``"de"``, ``"es"``).
+
+    Returns:
+        The complete greeting line, e.g. ``"Sehr geehrter Herr Dr. Mustermann,"`` or
+        ``"Sehr geehrte Damen und Herren,"``.
+    """
+    if not job.receiver_name:
+        return _GENERIC_GREETINGS[language]
+
+    name = job.receiver_name.strip()
+
+    if language == "de":
+        if name.startswith("Herr "):
+            return f"Sehr geehrter {name},"
+        elif name.startswith("Frau "):
+            return f"Sehr geehrte {name},"
+        else:
+            return _GENERIC_GREETINGS["de"]
+
+    if language == "es":
+        if name.startswith("Señor "):
+            return f"Estimado {name},"
+        elif name.startswith("Señora ") or name.startswith("Señorita "):
+            return f"Estimada {name},"
+        else:
+            return _GENERIC_GREETINGS["es"]
+
+    # English and any other language – keep it simple
+    return f"Dear {name},"
+
+
 def _build_cover_letter_context(
     job: JobDescription,
     letter_body: str,
@@ -80,11 +130,10 @@ def _build_cover_letter_context(
     Combines data from the job description and generated
     letter body into a flat dictionary whose keys match the ``[placeholder]``
     strings used in the DOCX template. The dictionary includes date, company,
-    location, receiver, qualifications, and all personal-info fields.
+    location, greeting, and letter body.
 
     Args:
         job: The job description containing company, location, etc.
-        profile: The user profile containing personal contact information.
         letter_body: The AI-generated cover letter body text.
         language: Language code used for date formatting (``"en"``, ``"de"``, ``"es"``).
 
@@ -95,7 +144,7 @@ def _build_cover_letter_context(
         "[date]": get_todays_date(language),
         "[company_name]": job.company,
         "[location]": job.location,
-        "[receiver]": job.company,
+        "[greeting]": _build_greeting(job, language),
         "[letter_body]": letter_body,
     }
 

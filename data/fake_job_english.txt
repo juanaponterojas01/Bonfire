@@ -1,0 +1,33 @@
+Job Posting: CFD Simulation Engineer - Thermal Systems
+
+Company: HeatFlow Solutions Ltd
+Location: Manchester, United Kingdom
+Contact: Ms. Sarah Jenkins, Head of Engineering
+
+About us:
+HeatFlow Solutions Ltd is a leading engineering consultancy specialising in thermal management and energy systems. With over 150 engineers across our UK offices, we deliver innovative solutions for aerospace, automotive, and renewable energy clients worldwide.
+
+Your responsibilities:
+• Perform CFD simulations for thermal systems using OpenFOAM and ANSYS Fluent
+• Model and simulate battery thermal management systems with integrated cooling concepts
+• Design and optimise heat exchangers and cooling circuits
+• Develop Python automation scripts for data processing and reporting
+• Collaborate with the experimental team to validate simulation results
+• Prepare technical documentation and client presentations
+
+Your profile:
+• Master's degree in Mechanical Engineering, Energy Engineering, or related field
+• Solid experience in CFD simulation (OpenFOAM, ANSYS Fluent, or similar)
+• Proficiency in Python programming
+• Strong understanding of thermodynamics and heat transfer
+• Experience with Modelica or MATLAB/Simulink is a plus
+• Excellent English communication skills; German is an advantage
+• Team player with independent working style and analytical mindset
+
+We offer:
+• Exciting projects with global industry leaders
+• Flexible working hours and hybrid work options
+• Professional development and conference attendance
+• Competitive salary and pension scheme
+
+Interested? Please send your application to careers@heatflow.co.uk.

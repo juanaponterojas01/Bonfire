@@ -77,6 +77,15 @@ def extract_job_description(raw_text: str) -> JobDescription:
     system_prompt = (
         "You are extracting a structured job description from a job posting. "
         "Extract the job title, company name, location, and required domain topics. "
+        "Also extract the receiver_name if a specific contact person is mentioned "
+        "(e.g. 'Ansprechpartner', 'Contact', 'Hiring Manager Name'). "
+        "If a contact person is found, infer their gender from context "
+        "(titles like Herr/Frau/Señor/Señora/Mr./Ms., first names, or pronouns) "
+        "and prefix the stored name with a gender indicator: "
+        "German: 'Herr ...' for male, 'Frau ...' for female; "
+        "Spanish: 'Señor ...' for male, 'Señora ...' for female; "
+        "English: 'Mr. ...' for male, 'Ms. ...' for female. "
+        "If gender cannot be determined or no person is mentioned, set receiver_name to null. "
         f"For required_topics, choose only from: {VALID_TOPICS}. "
         "Output valid JSON matching the JobDescription schema."
     )
