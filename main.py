@@ -3,7 +3,6 @@
 Usage examples::
 
     python main.py --job-file data/fake_job_german.txt --language de
-    python main.py --job-file job_desc.txt --language de --threshold moderate_match
     python main.py --job-text "We are hiring a CFD engineer..." --language de
 """
 
@@ -63,14 +62,6 @@ def _build_argument_parser() -> argparse.ArgumentParser:
         help="Output language (default: de)",
     )
 
-    parser.add_argument(
-        "--threshold",
-        type=str,
-        default="moderate_match",
-        choices=["weak_match", "moderate_match", "strong_match"],
-        help="Minimum match level (default: moderate_match)",
-    )
-
     return parser
 
 
@@ -84,13 +75,12 @@ def main() -> None:
     else:
         job_text = args.job_text
 
-    result = run_job_pipeline(job_text, args.language, args.threshold)
+    result = run_job_pipeline(job_text, args.language)
 
     if result["success"]:
         print("Application generated successfully!")
         print(f"   Company: {result['company']}")
         print(f"   Job: {result['job_title']}")
-        print(f"   Match: {result['recommendation']}")
         print(f"   Output: {result['output_dir']}")
         print(f"   Cover letter: {result['cover_letter']}")
         print(f"   CV: {result['cv']}")

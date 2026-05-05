@@ -8,15 +8,20 @@ and the structured-output path for the CV zones that must conform to the
 
 import json
 
-from src.llm_client import call_llm, call_llm_parsed, WRITER_MODEL
+from src.llm_client import call_llm, call_llm_parsed, EXTRACTION_MODEL, WRITER_MODEL
 from src.models import CVDynamicZones, JobDescription, UserProfile
 
 _LANGUAGE_COUNTRY = {
-    "en": "the United States",
+    "en": "Europe",
     "de": "Germany",
-    "es": "Spain",
+    "es": "Colombia",
 }
 
+_LANGUAGE_MAPPING = {
+    "en": "english",
+    "de": "german",
+    "es": "spanish",
+}
 
 def generate_cover_letter(
     job: JobDescription,
@@ -51,13 +56,14 @@ def generate_cover_letter(
         ValueError: If the ``OPENCODE_API_KEY`` environment variable is not set.
         RuntimeError: If the LLM call fails.
     """
+    text_language = _LANGUAGE_MAPPING[language]
     country = _LANGUAGE_COUNTRY[language]
     profile_summary = json.dumps(
         profile.model_dump(), indent=2, ensure_ascii=False
     )
 
     system_prompt = (
-        f"Write a motivation letter in {language} for the following position.\n"
+        f"Write a motivation letter in {text_language} for the following position.\n"
         "\n"
         f"JOB DESCRIPTION:\n{job.raw_text}\n"
         "\n"
@@ -83,8 +89,9 @@ def generate_cover_letter(
         "- Be specific and concrete \u2014 every claim should reference "
         "something real from the background\n"
         f"- Match the tone expected in {country}'s job market\n"
-        "- Length: 300-400 words\n"
+        "- Length: 230 - 250 words\n"
         "- Output only the letter body (no date, no addresses \u2014 "
+        "- Paragraph length: less than 50 words"
         "those are in the template)"
     )
 
@@ -109,11 +116,8 @@ def generate_cv_dynamic_zones(
     """Generate dynamic CV content zones tailored to a specific job.
 
     Produces the structured content that fills the dynamic sections of a
-    CV: a two-sentence professional summary, a curated list of relevant
-    education subjects, tailored bullet points for each work experience
-    entry, and a selection of the most relevant projects. All content is
-    generated in the requested *language* and tailored to the job's
-    required topics and description.
+    CV: a two-sentence professional summary, one sentence explaining the user's relevant
+    bachelor and master degrees subjects
 
     This function uses the structured-output LLM path
     (:func:`call_llm_parsed`) to obtain a validated
@@ -132,26 +136,44 @@ def generate_cv_dynamic_zones(
             matching the schema after exhausting all retries.
         RuntimeError: If the underlying LLM call fails.
     """
+    text_language = _LANGUAGE_MAPPING[language]
     system_prompt = (
         f"You are an expert CV writer. Generate dynamic CV content in "
-        f"{language} tailored to the job below.\n"
+        f"{text_language} tailored to the job below.\n"
         "\n"
         "Instructions:\n"
         "- Write a 3-sentence professional summary that highlights the "
-        "candidate's most relevant qualifications for this role.\n"
-        "- Select 6-8 relevant subjects from the user's education that "
-        "best match the job requirements.\n"
-        "- Write 2 bullet points per work experience entry, each tailored "
-        "to emphasise duties and achievements that align with this job.\n"
-        "- Select the 2 most relevant projects with a one-line description "
-        "each.\n"
-        "- Output strictly valid JSON matching the provided schema. "
-        "No extra text, no markdown fences."
+        "candidate's most relevant qualifications for this role. This text "
+        "can NOT have more than 362 characters.\n"
+        "- Write one sentence naming user's knowledge through 2-3 bachelor "
+        "subjects that are relevant to the job. This sentence can NOT be longer "
+        "than 140 characters.\n"
+        "- Write one sentence naming user's knowledge through 2-3 master "
+        "subjects that are relevant to the job. This sentence can NOT be longer "
+        "than 140 characters.\n"
+        "RULES:\n"
+        "- Be specific and concrete\n"
+        "- For professional summary, write the sentences in the first person singular\n"
+        "- For bachelor's and master's subjects, write the sentences in a neutral form, not related" 
+        "to a specific person, e.g., “Deepened knowledge in CFD” instead of “I deepened my knowledge in CFD.”"
+
+        "- Respond ONLY with valid JSON matching the provided schema."
     )
 
-    profile_json = json.dumps(
-        profile.model_dump(), indent=2, ensure_ascii=False
-    )
+    # Slim profile with only fields relevant to CV dynamic zones
+    relevant_profile = {
+        "education": [edu.model_dump() for edu in profile.education],
+        "skills": [skill.model_dump() for skill in profile.skills],
+        "experience": [
+            {"name": exp.name, "role": exp.role, "topics": exp.topics}
+            for exp in profile.experience
+        ],
+        "projects": [
+            {"name": p.name, "topics": p.topics}
+            for p in profile.projects
+        ],
+    }
+    profile_json = json.dumps(relevant_profile, indent=2, ensure_ascii=False)
 
     user_prompt = (
         f"JOB TITLE: {job.title}\n"
@@ -168,6 +190,7 @@ def generate_cv_dynamic_zones(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         response_model=CVDynamicZones,
-        model=WRITER_MODEL,
+        model=EXTRACTION_MODEL,
         temperature=0.2,
+        timeout=180.0,
     )

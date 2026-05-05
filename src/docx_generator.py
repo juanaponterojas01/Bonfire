@@ -16,7 +16,7 @@ from pathlib import Path
 from docx import Document
 from docx.text.paragraph import Paragraph
 
-from src.models import JobDescription, UserProfile
+from src.models import JobDescription
 from src.utils import get_todays_date
 
 
@@ -72,13 +72,12 @@ def _replace_text_in_docx(doc: Document, old_text: str, new_text: str) -> None:
 
 def _build_cover_letter_context(
     job: JobDescription,
-    profile: UserProfile,
     letter_body: str,
     language: str,
 ) -> dict[str, str]:
     """Build a context dictionary mapping template placeholders to values.
 
-    Combines data from the job description, user profile, and generated
+    Combines data from the job description and generated
     letter body into a flat dictionary whose keys match the ``[placeholder]``
     strings used in the DOCX template. The dictionary includes date, company,
     location, receiver, qualifications, and all personal-info fields.
@@ -97,12 +96,7 @@ def _build_cover_letter_context(
         "[company_name]": job.company,
         "[location]": job.location,
         "[receiver]": job.company,
-        "[qualifications]": letter_body,
-        "[personal_info_name]": profile.personal_info.name,
-        "[personal_info_address]": profile.personal_info.address,
-        "[personal_info_email]": profile.personal_info.email,
-        "[personal_info_phone]": profile.personal_info.phone,
-        "[personal_info_linkedin]": profile.personal_info.linkedin or "",
+        "[letter_body]": letter_body,
     }
 
 
@@ -110,7 +104,6 @@ def render_cover_letter(
     template_path: str,
     output_path: str,
     job: JobDescription,
-    profile: UserProfile,
     letter_body: str,
     language: str,
 ) -> str:
@@ -139,7 +132,7 @@ def render_cover_letter(
     """
     doc = Document(template_path)
 
-    context = _build_cover_letter_context(job, profile, letter_body, language)
+    context = _build_cover_letter_context(job, letter_body, language)
 
     for placeholder, value in context.items():
         _replace_text_in_docx(doc, placeholder, value)

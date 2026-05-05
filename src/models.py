@@ -251,20 +251,13 @@ class CVDynamicZones(BaseModel):
     Attributes:
         professional_summary: A 2–3 sentence career summary written to
             highlight the qualifications most relevant to the target job.
-        relevant_subjects: A curated list of academic subjects (pulled
-            from the user's education entries) that are most relevant to
-            the job description.
-        work_descriptions: A dictionary mapping each work experience
-            entry name to a list of bullet-point descriptions. Each set
-            of bullets is tailored to emphasise duties and achievements
-            that align with the target role.
-        selected_projects: A filtered and ordered list of the most
-            relevant projects. Each entry is a dictionary with keys
-            ``"name"`` and ``"description"`` containing a short project
-            title and a tailored paragraph respectively.
+        bachelor_subjects: One sentence explaining 2 or 3 relevant academic
+            subjects from the user's bachelor's degree.
+        master_subjects: One sentence explaining 2 or 3 relevant academic
+            subjects from the user's master's degree..
     """
 
     professional_summary: str
-    relevant_subjects: list[str]
-    work_descriptions: dict[str, list[str]]  # Key: Exp name, Value: bullet points
-    selected_projects: list[dict[str, str]]  # {"name": "...", "description": "..."}
+    bachelor_subjects: str
+    master_subjects: str
+

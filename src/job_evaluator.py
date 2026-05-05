@@ -10,21 +10,13 @@ The topic vocabulary in ``VALID_TOPICS`` is duplicated from
 of domain tags.
 """
 
-import json
-
 from pydantic import BaseModel
 
 from src.llm_client import call_llm_parsed, EXTRACTION_MODEL
-from src.models import JobDescription, JobMatchResult, UserProfile
+from src.models import JobDescription
+from src.profile_extractor import RELEVANT_FIELDS
 
-# NOTE: This list is duplicated from profile_extractor.py to keep both
-# modules self-contained. Keep them in sync when adding new topics.
-VALID_TOPICS = [
-    "thermal_simulation", "cfd", "experiments", "mechanical_design",
-    "turbomachines", "renewable_energy", "fluid_dynamics", "thermodynamics",
-    "programming", "machine_learning",
-]
-
+VALID_TOPICS = RELEVANT_FIELDS  
 
 class TopicsResponse(BaseModel):
     """Wrapper for LLM topic extraction output.
@@ -55,6 +47,7 @@ def extract_job_topics(raw_text: str) -> list[str]:
         f"Choose from this list: {VALID_TOPICS}. "
         "Output valid JSON matching the TopicsResponse schema."
     )
+        
 
     result = call_llm_parsed(
         system_prompt=system_prompt,
@@ -101,44 +94,3 @@ def extract_job_description(raw_text: str) -> JobDescription:
 
     return job
 
-
-def evaluate_job_match(job: JobDescription, profile: UserProfile) -> JobMatchResult:
-    """Evaluate how well a candidate profile matches a job description.
-
-    Sends the job details and the full candidate profile to the LLM for
-    a strict, evidence-based match assessment. The LLM is instructed not
-    to invent evidence and to be strict about gaps.
-
-    Args:
-        job (JobDescription): The structured job description to match against.
-        profile (UserProfile): The candidate's structured profile.
-
-    Returns:
-        JobMatchResult: A validated :class:`JobMatchResult` with
-            per-qualification matches, gaps, strengths, and an overall
-            recommendation.
-    """
-    system_prompt = (
-        "Evaluate how well the candidate matches the job. "
-        "Be strict about gaps. Do not invent evidence. "
-        "Only cite evidence that is explicitly present in the profile. "
-        "Output valid JSON matching the JobMatchResult schema."
-    )
-
-    user_prompt = (
-        f"Job Title: {job.title}\n"
-        f"Company: {job.company}\n"
-        f"Location: {job.location}\n"
-        f"Required Topics: {', '.join(job.required_topics)}\n"
-        f"Full Job Description:\n{job.raw_text}\n"
-        "\n---\n\n"
-        f"Candidate Profile:\n{json.dumps(profile.model_dump(), indent=2, ensure_ascii=False)}"
-    )
-
-    return call_llm_parsed(
-        system_prompt=system_prompt,
-        user_prompt=user_prompt,
-        response_model=JobMatchResult,
-        model=EXTRACTION_MODEL,
-        temperature=0.2,
-    )

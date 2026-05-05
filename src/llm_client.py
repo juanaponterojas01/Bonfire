@@ -10,7 +10,7 @@ from pydantic import BaseModel, ValidationError
 
 OPENCODE_BASE_URL = "https://opencode.ai/zen/go/v1"
 
-EXTRACTION_MODEL = "deepseek-v4-flash"   # For extraction, logic, JSON
+EXTRACTION_MODEL = "kimi-k2.5"          # For extraction, logic, JSON
 WRITER_MODEL = "deepseek-v4-flash"        # For writing, creative content
 
 
@@ -70,7 +70,7 @@ def call_llm_parsed(
     model: str = EXTRACTION_MODEL,
     temperature: float = 0.2,
     max_retries: int = 1,
-    timeout: float = 120.0,
+    timeout: float = 180.0,
 ) -> BaseModel:
     """Call an LLM and return a validated Pydantic model instance.
 

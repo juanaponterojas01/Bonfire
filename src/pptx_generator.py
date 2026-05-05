@@ -9,7 +9,6 @@ from pathlib import Path
 from pptx import Presentation
 
 from src.models import CVDynamicZones, JobDescription, UserProfile
-from src.utils import get_todays_date
 
 
 def _replace_text_in_shape(shape, old_text: str, new_text: str) -> None:
@@ -51,75 +50,6 @@ def _replace_text_in_pptx(prs: Presentation, old_text: str, new_text: str) -> No
             _replace_text_in_shape(shape, old_text, new_text)
 
 
-def _format_education(profile: UserProfile) -> str:
-    """Format education entries as multi-line text.
-
-    Args:
-        profile: The user's complete profile.
-
-    Returns:
-        A formatted string with degree, institution, year, and optional thesis
-        for each education entry, separated by blank lines.
-    """
-    entries = []
-    for edu in profile.education:
-        lines = [
-            f"{edu.degree} — {edu.institution}",
-            edu.year,
-        ]
-        if edu.thesis_title:
-            lines.append(f"Thesis: {edu.thesis_title}")
-        entries.append("\n".join(lines))
-    return "\n\n".join(entries)
-
-
-def _format_skills(profile: UserProfile) -> str:
-    """Group skills by category and format as labelled lists.
-
-    Args:
-        profile: The user's complete profile.
-
-    Returns:
-        A formatted string with skills grouped under their category headings.
-    """
-    category_order = ["technical", "software", "language", "soft"]
-    category_labels = {
-        "technical": "Technical",
-        "software": "Software",
-        "language": "Language",
-        "soft": "Soft",
-    }
-    grouped: dict[str, list[str]] = {cat: [] for cat in category_order}
-    for skill in profile.skills:
-        if skill.category in grouped:
-            grouped[skill.category].append(skill.name)
-
-    lines = []
-    for cat in category_order:
-        if grouped[cat]:
-            lines.append(f"{category_labels[cat]}: {', '.join(grouped[cat])}")
-    return "\n".join(lines)
-
-
-def _format_work_experience(profile: UserProfile) -> str:
-    """Format static work experience info (dates, titles, companies).
-
-    Args:
-        profile: The user's complete profile.
-
-    Returns:
-        A formatted string with each experience entry showing name and
-        duration/type, separated by blank lines.
-    """
-    entries = []
-    for exp in profile.experience:
-        lines = [
-            exp.name,
-            f"{exp.duration} | {exp.type}",
-        ]
-        entries.append("\n".join(lines))
-    return "\n\n".join(entries)
-
 
 def _format_relevant_subjects(dynamic_zones: CVDynamicZones) -> str:
     """Format relevant academic subjects as a bulleted list.
@@ -133,25 +63,7 @@ def _format_relevant_subjects(dynamic_zones: CVDynamicZones) -> str:
     return "\n".join(f"• {subject}" for subject in dynamic_zones.relevant_subjects)
 
 
-def _format_selected_projects(dynamic_zones: CVDynamicZones) -> str:
-    """Format selected projects as a numbered list with descriptions.
-
-    Args:
-        dynamic_zones: The AI-generated dynamic CV content.
-
-    Returns:
-        A string with each project numbered and its description indented.
-    """
-    lines = []
-    for i, project in enumerate(dynamic_zones.selected_projects, 1):
-        lines.append(f"{i}. {project['name']}")
-        lines.append(f"   {project['description']}")
-    return "\n".join(lines)
-
-
 def _build_cv_context(
-    job: JobDescription,
-    profile: UserProfile,
     dynamic_zones: CVDynamicZones,
     language: str,
 ) -> dict[str, str]:
@@ -168,24 +80,10 @@ def _build_cv_context(
         the formatted text to replace them with.
     """
     context: dict[str, str] = {
-        "[date]": get_todays_date(language),
         "[professional_summary]": dynamic_zones.professional_summary,
-        "[relevant_subjects]": _format_relevant_subjects(dynamic_zones),
-        "[skills]": _format_skills(profile),
-        "[education]": _format_education(profile),
-        "[selected_projects]": _format_selected_projects(dynamic_zones),
-        "[personal_info_name]": profile.personal_info.name,
-        "[personal_info_address]": profile.personal_info.address,
-        "[personal_info_email]": profile.personal_info.email,
-        "[personal_info_phone]": profile.personal_info.phone,
-        "[personal_info_linkedin]": profile.personal_info.linkedin or "",
-        "[work_experience]": _format_work_experience(profile),
+        "[bachelor_subjects]": dynamic_zones.bachelor_subjects,
+        "[master_subjects]": dynamic_zones.master_subjects,
     }
-
-    for exp_name, bullets in dynamic_zones.work_descriptions.items():
-        key = f"[work_descriptions:{exp_name}]"
-        context[key] = "\n".join(f"• {b}" for b in bullets)
-
     return context
 
 
@@ -211,7 +109,7 @@ def render_cv(
         The output path as a string.
     """
     prs = Presentation(str(template_path))
-    context = _build_cv_context(job, profile, dynamic_zones, language)
+    context = _build_cv_context(dynamic_zones, language)
 
     for placeholder, value in context.items():
         _replace_text_in_pptx(prs, placeholder, value)

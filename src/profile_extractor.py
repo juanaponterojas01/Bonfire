@@ -16,13 +16,19 @@ from pathlib import Path
 from src.models import UserProfile
 from src.llm_client import call_llm_parsed, EXTRACTION_MODEL
 
+RELEVANT_FIELDS = [
+    "thermal_simulation", "cfd", "experiments", "mechanical_design",
+    "turbomachines", "renewable_energy", "fluid_dynamics", "thermodynamics",
+    "programming", "machine_learning",
+]
+
+
 PROFILE_EXTRACTION_SYSTEM_PROMPT = (
     "You are extracting a structured professional profile from documents. "
     "Be exhaustive and precise — do not invent information. "
     "Output valid JSON matching the UserProfile schema. Only include information explicitly stated. "
     "Tag each project with relevant topics from: "
-    "[thermal_simulation, cfd, experiments, mechanical_design, turbomachines, "
-    "renewable_energy, fluid_dynamics, thermodynamics, programming, machine_learning]."
+    f"{RELEVANT_FIELDS}"
 )
 
 def _read_md_files(md_directory: str) -> dict[str, str]:
