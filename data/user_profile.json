@@ -1,0 +1,363 @@
+{
+  "personal_info": {
+    "name": "Juan Aponte",
+    "address": "Spinnerstraße 35, 38114 Braunschweig",
+    "email": "jumapontero@unal.edu.co",
+    "phone": "3154410823",
+    "linkedin": "https://www.linkedin.com/in/juan-aponte-736a79126/"
+  },
+  "education": [
+    {
+      "degree": "Master of Science (M.Sc.) in Mechanical Engineering",
+      "institution": "Technische Universität Braunschweig",
+      "subjects": [
+        "Thermodynamics of Mixtures",
+        "Methods of Process Modelling and Optimization",
+        "Numerical Methods of Differential Equations",
+        "Wind Energy Systems",
+        "Renewable Energy Technologies",
+        "Energy-Efficient Machines of Mechanical Process Engineering",
+        "Hydraulic Turbomachinery with Laboratory",
+        "Mobile Air Conditioning with Laboratory",
+        "Molecular Simulation with Laboratory",
+        "Modelling of Thermal Systems using Modelica",
+        "Finite Elements - a Practical Introduction",
+        "Positive Displacement Machines",
+        "Introduction to Marketing",
+        "Portuguese — Elementary (A1)",
+        "Student Research Project: Implementation of new back-plate measurement technology for carbon floating ring seals",
+        "Master's Thesis: Optimal control of a charging process for a battery system"
+      ],
+      "thesis_title": "Optimal control of a charging process for a battery system",
+      "year": "2024"
+    },
+    {
+      "degree": "Ingeniero Mecánico (Mechanical Engineer)",
+      "institution": "Universidad Nacional de Colombia",
+      "subjects": [
+        "Tecnología mecánica básica",
+        "Dibujo básico",
+        "Ingeniería y Desarrollo Sostenible",
+        "Matemáticas Básicas",
+        "Programación de computadores",
+        "Cálculo diferencial",
+        "Dibujo de Máquinas",
+        "Principios de química",
+        "Fundamentos de mecánica",
+        "Álgebra Lineal",
+        "Cálculo Integral",
+        "Diseño e innovación sostenible y apropiable",
+        "Probabilidad y estadística fundamental",
+        "Ciencia e ingeniería de materiales",
+        "Principios de dinámica",
+        "Fundamentos de electricidad y magnetismo",
+        "Principios de Estática",
+        "Ecuaciones Diferenciales",
+        "Termodinámica técnica",
+        "Principios de mecánica de fluidos",
+        "Resistencia de Materiales",
+        "Instalaciones y máquinas eléctricas",
+        "Materiales de Ingeniería",
+        "Métodos numéricos",
+        "Ingeniería económica",
+        "Procesos de Manufactura I",
+        "Fundamentos de transferencia de calor",
+        "Mecanismos",
+        "Electrónica básica",
+        "Gerencia y gestión de proyectos",
+        "Procesos de Manufactura II",
+        "Modelación matemática",
+        "Diseño de elementos de máquinas I",
+        "Señales y sistemas I",
+        "Aplicaciones de elementos finitos",
+        "Análisis de sistemas dinámicos",
+        "Ingeniería de Manufactura",
+        "Diseño de elementos de máquinas II",
+        "Sistemas hidráulicos y neumáticos",
+        "Eficiencia energética y criterios de sostenibilidad de generación de potencia y energías renovables",
+        "Motores de Combustión Interna",
+        "Plantas Térmicas",
+        "Mecánica del medio continuo",
+        "Fundamentos de control",
+        "Alemán I",
+        "Alemán II",
+        "Proyecto Aplicado de Ingeniería",
+        "Tribología",
+        "Deporte clase",
+        "Design and simulation of low power wind and hydrokinetic turbines",
+        "Trabajo de Grado",
+        "Dinámica de fluidos computacional (CFD)"
+      ],
+      "thesis_title": "Development of an Incompressible Flow Solver to Study Simple Phenomena",
+      "year": "2019"
+    }
+  ],
+  "experience": [
+    {
+      "name": "Internship at TLK-Thermo GmbH",
+      "type": "industry",
+      "role": "Intern",
+      "duration": "October 2023 – January 2024",
+      "key_contribution": "Developed backend software in Python and implemented a PyQt6 graphical user interface for editing and converting data between JSON and Python classes.",
+      "technologies": [
+        "Python",
+        "PyQt6",
+        "Sphinx",
+        "JSON"
+      ],
+      "topics": [
+        "programming"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "category": "technical",
+      "name": "CFD",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "technical",
+      "name": "Thermal Simulation",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "technical",
+      "name": "Mechanical Design",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "technical",
+      "name": "Finite Element Analysis",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "technical",
+      "name": "Turbomachinery",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "technical",
+      "name": "Battery Modeling",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "technical",
+      "name": "Optimal Control",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "technical",
+      "name": "Machine Learning",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "technical",
+      "name": "Fluid Dynamics",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "technical",
+      "name": "Thermodynamics",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "technical",
+      "name": "Renewable Energy Technologies",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "technical",
+      "name": "Experiments",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "Python",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "PyTorch",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "Modelica",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "CasADi",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "MATLAB",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "Autodesk Inventor",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "Qt (PyQt6)",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "Sphinx",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "Hugging Face",
+      "proficiency": "beginner"
+    },
+    {
+      "category": "language",
+      "name": "Spanish",
+      "proficiency": "expert"
+    },
+    {
+      "category": "language",
+      "name": "English",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "language",
+      "name": "German",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "language",
+      "name": "Portuguese",
+      "proficiency": "beginner"
+    },
+    {
+      "category": "soft",
+      "name": "Presentation",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "soft",
+      "name": "Teamwork",
+      "proficiency": "intermediate"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Development of an Incompressible Flow Solver to Study Simple Phenomena",
+      "type": "thesis",
+      "role": "Undergraduate Student",
+      "duration": "2019",
+      "key_contribution": "Developed a compact high-order incompressible flow solver using compact finite differences and validated against the Backward Face Step benchmark.",
+      "technologies": ["Julia"],
+      "topics": [
+        "cfd",
+        "fluid_dynamics",
+        "programming"
+      ]
+    },
+    {
+      "name": "Implementation of New Back-Plate Measurement Technology for Operational Behavior Analysis of Carbon Floating Ring Seals",
+      "type": "thesis",
+      "role": "Research Assistant",
+      "duration": "November 2022 – March 2023",
+      "key_contribution": "Implemented a new back-plate pressure measurement technique to investigate tilting behavior of carbon floating ring seals.",
+      "technologies": [
+        "MATLAB",
+        "sensors"
+      ],
+      "topics": [
+        "experiments",
+        "turbomachines",
+        "fluid_dynamics",
+        "mechanical_design"
+      ]
+    },
+    {
+      "name": "Optimal control of a charging process for a battery system",
+      "type": "thesis",
+      "role": "Master Candidate",
+      "duration": "April 2024 – October 2024",
+      "key_contribution": "Developed an optimal control approach for battery charging using Modelica and CasADi, achieving fast and safe charging while respecting temperature constraints.",
+      "technologies": [
+        "Modelica",
+        "CasADi",
+        "Python"
+      ],
+      "topics": [
+        "thermal_simulation",
+        "thermodynamics",
+        "programming",
+        "renewable_energy"
+      ]
+    },
+    {
+      "name": "Diseño y Fabricación de una Máquina Embaladora de Plegadizos de Cartón",
+      "type": "academic",
+      "role": "Mechanical Designer",
+      "duration": "2018",
+      "key_contribution": "Designed and fabricated a cardboard box wrapping machine with orbital mechanism, increasing automation in a packaging line.",
+      "technologies": [
+        "Autodesk Inventor",
+        "FEA"
+      ],
+      "topics": [
+        "mechanical_design"
+      ]
+    },
+    {
+      "name": "Digital Twin for Battery SOC estimation",
+      "type": "academic",
+      "role": "Developer",
+      "duration": "Not specified",
+      "key_contribution": "Developed a physics-informed LSTM based digital twin for battery SOC estimation, comparing different training regimes.",
+      "technologies": [
+        "Python",
+        "PyTorch",
+        "LSTM",
+        "HuggingFace Spaces"
+      ],
+      "topics": [
+        "programming",
+        "machine_learning",
+        "renewable_energy"
+      ]
+    },
+    {
+      "name": "Job Application Document Generator",
+      "type": "academic",
+      "role": "Developer",
+      "duration": "Not specified",
+      "key_contribution": "Created a Python tool to automate generation of job application documents from templates with multi-language support.",
+      "technologies": [
+        "Python",
+        "PyQt6",
+        "Sphinx",
+        "JSON"
+      ],
+      "topics": [
+        "programming"
+      ]
+    },
+    {
+      "name": "Bonfire app - Job Applications powered with AI",
+      "type": "academic",
+      "role": "Developer",
+      "duration": "Not specified",
+      "key_contribution": "Developed an AI-powered job application tool using LLMs for personalized document generation.",
+      "technologies": [
+        "Python",
+        "LLM"
+      ],
+      "topics": [
+        "programming",
+        "machine_learning"
+      ]
+    }
+  ]
+}

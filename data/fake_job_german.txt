@@ -1,0 +1,32 @@
+Stellenanzeige: CFD-Simulationsingenieur (m/w/d) für thermische Systeme
+
+Firma: ThermoTech GmbH
+Standort: Hannover, Deutschland
+
+Über uns:
+ThermoTech GmbH ist ein führender Entwicklungspartner für thermische Systeme in der Automobil- und Energietechnik. Mit über 200 Mitarbeitern an drei Standorten in Deutschland entwickeln wir innovative Lösungen für Wärmemanagement, Batteriesysteme und erneuerbare Energien.
+
+Ihre Aufgaben:
+• Durchführung von CFD-Simulationen für thermische Systeme mit OpenFOAM und ANSYS Fluent
+• Modellierung und Simulation von Batteriesystemen mit integriertem Kühlkonzept
+• Entwicklung und Optimierung von Wärmetauschern und Kühlsystemen
+• Programmierung von Automatisierungsskripten in Python zur Datenauswertung
+• Zusammenarbeit mit dem Versuchsteam zur Validierung von Simulationsergebnissen
+• Erstellung technischer Dokumentationen und Präsentationen
+
+Ihr Profil:
+• Abgeschlossenes Studium der Maschinenbau, Energietechnik oder eines vergleichbaren Studiengangs
+• Fundierte Kenntnisse in CFD-Simulation (OpenFOAM, ANSYS Fluent oder vergleichbar)
+• Erfahrung in der Programmierung mit Python
+• Kenntnisse in Thermodynamik und Wärmeübertragung
+• Erfahrung mit Modelica oder MATLAB/Simulink von Vorteil
+• Sehr gute Deutsch- und Englischkenntnisse
+• Teamfähigkeit, eigenständige Arbeitsweise und analytisches Denkvermögen
+
+Wir bieten:
+• Spannende Projekte in einem innovativen Umfeld
+• Flexible Arbeitszeiten und Home-Office-Möglichkeiten
+• Weiterbildungsmöglichkeiten und Konferenzbesuche
+• Ein attraktives Gehalt sowie betriebliche Altersvorsorge
+
+Haben wir Ihr Interesse geweckt? Dann senden Sie uns Ihre Bewerbungsunterlagen per E-Mail an bewerbung@thermotech.de.

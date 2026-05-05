@@ -1,0 +1,7 @@
+.env
+.venv/
+.pytest_cache/
+.vscode/
+tests/
+*.md
+!*README.md
