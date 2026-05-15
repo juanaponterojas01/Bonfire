@@ -1,7 +1,10 @@
 .env
 .venv/
 .pytest_cache/
+src/__pycache__/
+output/
 .vscode/
 tests/
 *.md
 !*README.md
+.gitignore

@@ -2,10 +2,11 @@
 
 This module provides the main workflow engine. Given a job description and a
 language, it loads the user profile, evaluates the job match, generates
-tailored content, validates it, and renders the final application documents.
+tailored content, and renders the final application documents.
 """
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -13,7 +14,6 @@ from src.models import JobDescription, UserProfile
 from src.profile_extractor import extract_profile_from_md
 from src.job_evaluator import extract_job_description
 from src.content_writer import generate_cover_letter, generate_cv_dynamic_zones
-from src.content_validator import validate_content
 from src.docx_generator import render_cover_letter
 from src.pptx_generator import render_cv
 from src.utils import set_file_name
@@ -82,9 +82,9 @@ def run_job_pipeline(
 ) -> dict:
     """Execute job application steps pipeline.
 
-    Loads or extracts the user profile, parses the job description, 
-    generates tailored cover letter and CV content, validates the
-    output, and renders the final documents.
+    Loads or extracts the user profile, parses the job description,
+    generates tailored cover letter and CV content, and renders
+    the final documents.
 
     Args:
         job_text: The raw text of the job posting.
@@ -96,25 +96,28 @@ def run_job_pipeline(
         success, or ``"success": False`` with a ``"reason"`` on failure.
     """
     try:
-        print("loading and parsing job description...\n")
-        profile = _load_or_extract_profile()
-        job = _parse_job_description(job_text)
+        print("loading and parsing job description, and reading background...\n")
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            future_profile = executor.submit(_load_or_extract_profile)
+            future_job = executor.submit(_parse_job_description, job_text)
+            future_summary = executor.submit(_load_summary, language)
 
-        print("Reading background...\n")
-        relevant_details = _load_summary(language)
+            profile = future_profile.result()
+            job = future_job.result()
+            relevant_details = future_summary.result()
 
-        print("Genearating cover letter...\n")
-        letter_body = generate_cover_letter(job, profile, relevant_details, language)
-
-        flags = validate_content(letter_body, profile)
-        if flags:
-            print(
-                f"Warning: Cover letter validation flagged {len(flags)} claims: {flags}",
-                file=sys.stderr,
+        # Phase 2: Cover letter and CV zones run concurrently
+        print("Generating cover letter and CV dynamic zones...\n")
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            future_letter = executor.submit(
+                generate_cover_letter, job, profile, relevant_details, language
+            )
+            future_cv = executor.submit(
+                generate_cv_dynamic_zones, job, profile, language
             )
 
-        print("Generating cv dynamic zones...\n")
-        dynamic_zones = generate_cv_dynamic_zones(job, profile, language)
+            letter_body = future_letter.result()
+            dynamic_zones = future_cv.result()
 
         output_dir = Path("output") / job.company
         output_dir.mkdir(parents=True, exist_ok=True)
