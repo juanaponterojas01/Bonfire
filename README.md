@@ -170,6 +170,7 @@ echo "OPENCODE_API_KEY=sk-..." > .env
 - `python-pptx>=1.0.2` — PPTX template rendering
 - `pydantic>=2.0.0` — Data validation and schemas
 - `python-dotenv>=1.0.0` — Environment variable loading
+- `requests>=2.31.0` — HTTP client for Jina AI URL scraping
 - `openai>=1.0.0` — Underlying API transport
 - `tiktoken>=0.5.0` — Token counting
 - `pytest>=8.0.0` — Testing
@@ -189,6 +190,9 @@ python main.py --job-text "We are hiring a Senior CFD Engineer..." --language en
 
 # From a job posting file (Spanish)
 python main.py --job-file data/fake_job_spanish.txt --language es
+
+# From a URL
+python main.py --url "https://example.com/careers/software-engineer" --language en
 ```
 
 ### CLI Arguments
@@ -197,9 +201,10 @@ python main.py --job-file data/fake_job_spanish.txt --language es
 |---|---|
 | `--job-file` | Path to a file containing the raw job posting text |
 | `--job-text` | Raw job posting text passed directly on the command line |
+| `--url` | URL of a job posting to fetch and scrape |
 | `--language` | Output language: `en` (English), `de` (German), or `es` (Spanish). Default: `de` |
 
-> **Note:** `--job-file` and `--job-text` are mutually exclusive — you must provide exactly one.
+> **Note:** `--job-file`, `--job-text`, and `--url` are mutually exclusive — you must provide exactly one.
 
 ### What Happens
 
@@ -216,6 +221,8 @@ The pipeline runs in two parallelized phases to minimize wall-clock time:
 
 **Phase 3 (sequential)** — Fast, local processing:
 6. **Document Rendering** — Fills the DOCX and PPTX templates with all generated content and saves the final files.
+
+> **URL Scraping Limitations:** Bonfire fetches job pages via [Jina AI Reader](https://r.jina.ai/), which handles JavaScript-rendered content better than a plain HTTP request. However, some sites (e.g., LinkedIn, Indeed) block external readers or require authentication. When a URL fails because it is blocked or returns no usable text, it is automatically logged to `data/blacklist.txt` so you can avoid those sites in the future. If `--url` fails, save the text manually and use `--job-file` or `--job-text` instead.
 
 ### Output
 
@@ -276,6 +283,7 @@ bonfire_app/
 ├── .env                        # OPENCODE_API_KEY (not committed)
 ├── data/
 │   ├── user_profile.json       # Cached structured profile (auto-generated)
+│   ├── blacklist.txt           # URLs that failed scraping (auto-generated)
 │   ├── background_md/          # Your background as Markdown files
 │   │   ├── background_deutsch.md
 │   │   ├── background_english.md
@@ -368,3 +376,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - Powered by [OpenCode](https://opencode.ai) for inference
 - DOCX and PPTX manipulation via [python-docx](https://github.com/python-openxml/python-docx) and [python-pptx](https://github.com/scanny/python-pptx)
 - Data validation via [Pydantic](https://docs.pydantic.dev/)
+- URL scraping via [Jina AI Reader](https://r.jina.ai/)

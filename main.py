@@ -3,7 +3,8 @@
 Usage examples::
 
     python main.py --job-file data/fake_job_german.txt --language de
-    python main.py --job-text "We are hiring a CFD engineer..." --language de
+    python main.py --job-text "We are hiring a CFD engineer..." --language en
+    python main.py --url "https://example.com/careers/software-engineer" --language es
 """
 
 import argparse
@@ -53,6 +54,11 @@ def _build_argument_parser() -> argparse.ArgumentParser:
         type=str,
         help="Path to a file containing the job description",
     )
+    input_group.add_argument(
+        "--url",
+        type=str,
+        help="URL of a job posting to fetch and scrape",
+    )
 
     parser.add_argument(
         "--language",
@@ -70,7 +76,21 @@ def main() -> None:
     parser = _build_argument_parser()
     args = parser.parse_args()
 
-    if args.job_file:
+    if args.url:
+        try:
+            from src.job_scraper import fetch_job_text
+            job_text = fetch_job_text(args.url)
+        except ImportError:
+            print(
+                "Error: URL scraping requires 'requests'. "
+                "Install it with: pip install requests",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        except (ValueError, RuntimeError) as e:
+            print(f"Error fetching URL: {e}", file=sys.stderr)
+            sys.exit(1)
+    elif args.job_file:
         job_text = _read_job_file(args.job_file)
     else:
         job_text = args.job_text

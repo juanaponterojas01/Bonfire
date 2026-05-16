@@ -10,8 +10,8 @@ from pydantic import BaseModel, ValidationError
 
 OPENCODE_BASE_URL = "https://opencode.ai/zen/go/v1"
 
-EXTRACTION_MODEL = "kimi-k2.5"          # For extraction, logic, JSON
-WRITER_MODEL = "deepseek-v4-flash"        # For writing, creative content
+EXTRACTION_MODEL = "deepseek-v4-flash"  # For extraction, logic, JSON
+WRITER_MODEL = "minimax-m2.7"           # For writing, creative content
 
 
 def strip_json_fences(text: str) -> str:

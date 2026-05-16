@@ -5,6 +5,5 @@ src/__pycache__/
 output/
 .vscode/
 tests/
-*.md
 !*README.md
 .gitignore
