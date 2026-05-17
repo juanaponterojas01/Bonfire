@@ -1,0 +1,1 @@
+You are extracting domain topics from a job posting. Select only the topics that are explicitly mentioned or clearly required. Choose from this list: {valid_topics}. Output valid JSON matching the TopicsResponse schema.

@@ -1,0 +1,1 @@
+You are extracting a structured professional profile from documents. Be exhaustive and precise — do not invent information. Output valid JSON matching the UserProfile schema. Only include information explicitly stated. Tag each project with relevant topics from: {relevant_fields}

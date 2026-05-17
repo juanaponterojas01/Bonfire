@@ -1,7 +1,8 @@
 Stellenanzeige: CFD-Simulationsingenieur (m/w/d) für thermische Systeme
 
 Firma: ThermoTech GmbH
-Standort: Hannover, Deutschland
+Standort: Hannover
+Email: bewerbungen.thermotech@web.de
 
 Über uns:
 ThermoTech GmbH ist ein führender Entwicklungspartner für thermische Systeme in der Automobil- und Energietechnik. Mit über 200 Mitarbeitern an drei Standorten in Deutschland entwickeln wir innovative Lösungen für Wärmemanagement, Batteriesysteme und erneuerbare Energien.

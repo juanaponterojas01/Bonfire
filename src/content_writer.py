@@ -1,15 +1,16 @@
-"""Generate AI-written content for cover letters and CV dynamic zones.
+"""Generate AI-written content for cover letters, emails, and CV dynamic zones.
 
 This module generates the creative text that fills the dynamic sections of job
 application documents. It uses the raw-text LLM path for the cover letter body
-and the structured-output path for the CV zones that must conform to the
-:class:`CVDynamicZones` schema.
+and the application email, and the structured-output path for the CV zones that
+must conform to the :class:`CVDynamicZones` schema.
 """
 
 import json
 
 from src.llm_client import call_llm, call_llm_parsed, EXTRACTION_MODEL, WRITER_MODEL
 from src.models import CVDynamicZones, JobDescription, UserProfile
+from src.utils import render_prompt
 
 _LANGUAGE_COUNTRY = {
     "en": "Europe",
@@ -62,38 +63,13 @@ def generate_cover_letter(
         profile.model_dump(), indent=2, ensure_ascii=False
     )
 
-    system_prompt = (
-        f"Write a motivation letter in {text_language} for the following position.\n"
-        "\n"
-        f"JOB DESCRIPTION:\n{job.raw_text}\n"
-        "\n"
-        f"CANDIDATE PROFILE:\n{profile_summary}\n"
-        "\n"
-        f"DETAILED EVIDENCE (use these to support specific claims):\n"
-        f"{relevant_details}\n"
-        "\n"
-        "STRUCTURE REQUIREMENTS:\n"
-        "- Paragraph 1: Express interest in the specific position and company. "
-        "Reference something specific about the company or role that attracts you.\n"
-        "- Paragraph 2: Connect your experience to their requirements. "
-        "Cite specific projects or achievements as evidence.\n"
-        "- Paragraph 3: Highlight what makes you a strong candidate beyond "
-        "the basic requirements.\n"
-        "- Paragraph 4: Express enthusiasm for an interview. Professional closing.\n"
-        "\n"
-        "RULES:\n"
-        "- Do NOT invent qualifications, experiences, or achievements not "
-        "present in the profile or evidence\n"
-        "- Do NOT use generic phrases like \"I am writing to apply for\" or "
-        "\"I believe I am an ideal candidate\"\n"
-        "- Be specific and concrete \u2014 every claim should reference "
-        "something real from the background\n"
-        f"- Match the tone expected in {country}'s job market\n"
-        "- Length: 230 - 250 words\n"
-        "- Output only the letter body (no date, no addresses \u2014 "
-        "- Paragraph length: less than 50 words"
-        "- Use connectors between sentences so the text is more fluent by reading"
-        "those are in the template)"
+    system_prompt = render_prompt(
+        "cover_letter",
+        text_language=text_language,
+        job_raw_text=job.raw_text,
+        profile_summary=profile_summary,
+        relevant_details=relevant_details,
+        country=country,
     )
 
     user_prompt = (
@@ -138,27 +114,9 @@ def generate_cv_dynamic_zones(
         RuntimeError: If the underlying LLM call fails.
     """
     text_language = _LANGUAGE_MAPPING[language]
-    system_prompt = (
-        f"You are an expert CV writer. Generate dynamic CV content in "
-        f"{text_language} tailored to the job below.\n"
-        "\n"
-        "Instructions:\n"
-        "- Write a 3-sentence professional summary that highlights the "
-        "candidate's most relevant qualifications for this role. This text "
-        "can NOT have more than 362 characters.\n"
-        "- Write one sentence naming user's knowledge through 2-3 bachelor "
-        "subjects that are relevant to the job. This sentence can NOT be longer "
-        "than 140 characters.\n"
-        "- Write one sentence naming user's knowledge through 2-3 master "
-        "subjects that are relevant to the job. This sentence can NOT be longer "
-        "than 140 characters.\n"
-        "RULES:\n"
-        "- Be specific and concrete\n"
-        "- For professional summary, write the sentences in the first person singular\n"
-        "- For bachelor's and master's subjects, write the sentences in a neutral form, not related" 
-        "to a specific person, e.g., “Deepened knowledge in CFD” instead of “I deepened my knowledge in CFD.”"
-
-        "- Respond ONLY with valid JSON matching the provided schema."
+    system_prompt = render_prompt(
+        "cv_dynamic_zones",
+        text_language=text_language,
     )
 
     # Slim profile with only fields relevant to CV dynamic zones
@@ -194,4 +152,67 @@ def generate_cv_dynamic_zones(
         model=EXTRACTION_MODEL,
         temperature=0.2,
         timeout=180.0,
+    )
+
+
+def generate_email_yaml(
+    job: JobDescription,
+    profile: UserProfile,
+    language: str,
+) -> str:
+    """Generate a short, direct application email for a job posting.
+
+    Produces a concise, professional email including a YAML-style preamble
+    (``subject:`` and ``to:`` fields), a greeting, a body paragraph, and a
+    farewell. The LLM detects the language from the job posting text and
+    writes the entire email in that language.
+
+    This function uses the raw-text LLM path (:func:`call_llm` with the
+    :data:`WRITER_MODEL`) to produce free-form prose.
+
+    Args:
+        job (JobDescription): The target job description. Uses ``title``,
+            ``company``, ``email``, and ``raw_text``.
+        profile (UserProfile): The candidate's full profile. Uses
+            ``personal_info.name`` and qualifications to ground claims.
+        language (str): Language code that determines the target language
+            for the email (``"en"``, ``"de"``, or ``"es"``). The LLM uses
+            this to write the entire email in that language.
+
+    Returns:
+        str: The raw text of the generated email, beginning with
+        YAML-style ``subject:`` and ``to:`` fields, followed by the
+        greeting, body, and farewell.
+
+    Raises:
+        KeyError: If *language* is not a key in ``_LANGUAGE_MAPPING``.
+        ValueError: If the ``OPENCODE_API_KEY`` environment variable is not
+            set.
+        RuntimeError: If the LLM call fails.
+    """
+    text_language = _LANGUAGE_MAPPING[language]
+    profile_json = json.dumps(
+        profile.model_dump(), indent=2, ensure_ascii=False
+    )
+
+    system_prompt = render_prompt(
+        "email_yaml",
+        text_language=text_language,
+        job_raw_text=job.raw_text,
+        profile_json=profile_json,
+        job_title=job.title,
+        job_email=job.email,
+        candidate_name=profile.personal_info.name,
+    )
+
+    user_prompt = (
+        f"Write the email for the position of {job.title} "
+        f"at {job.company}."
+    )
+
+    return call_llm(
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        model=WRITER_MODEL,
+        temperature=0.5,
     )

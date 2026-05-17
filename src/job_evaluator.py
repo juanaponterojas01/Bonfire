@@ -13,8 +13,9 @@ of domain tags.
 from pydantic import BaseModel
 
 from src.llm_client import call_llm_parsed, EXTRACTION_MODEL
-from src.models import JobDescription
+from src.models import JobDescription, JobMatchResult, UserProfile
 from src.profile_extractor import RELEVANT_FIELDS
+from src.utils import render_prompt
 
 VALID_TOPICS = RELEVANT_FIELDS  
 
@@ -41,13 +42,10 @@ def extract_job_topics(raw_text: str) -> list[str]:
     Returns:
         list[str]: A list of valid topic tags found in the job description.
     """
-    system_prompt = (
-        "You are extracting domain topics from a job posting. "
-        "Select only the topics that are explicitly mentioned or clearly required. "
-        f"Choose from this list: {VALID_TOPICS}. "
-        "Output valid JSON matching the TopicsResponse schema."
+    system_prompt = render_prompt(
+        "extract_job_topics",
+        valid_topics=VALID_TOPICS,
     )
-        
 
     result = call_llm_parsed(
         system_prompt=system_prompt,
@@ -74,20 +72,9 @@ def extract_job_description(raw_text: str) -> JobDescription:
         JobDescription: A validated :class:`JobDescription` with all fields
             populated.
     """
-    system_prompt = (
-        "You are extracting a structured job description from a job posting. "
-        "Extract the job title, company name, location, and required domain topics. "
-        "Also extract the receiver_name if a specific contact person is mentioned "
-        "(e.g. 'Ansprechpartner', 'Contact', 'Hiring Manager Name'). "
-        "If a contact person is found, infer their gender from context "
-        "(titles like Herr/Frau/Señor/Señora/Mr./Ms., first names, or pronouns) "
-        "and prefix the stored name with a gender indicator: "
-        "German: 'Herr ...' for male, 'Frau ...' for female; "
-        "Spanish: 'Señor ...' for male, 'Señora ...' for female; "
-        "English: 'Mr. ...' for male, 'Ms. ...' for female. "
-        "If gender cannot be determined or no person is mentioned, set receiver_name to null. "
-        f"For required_topics, choose only from: {VALID_TOPICS}. "
-        "Output valid JSON matching the JobDescription schema."
+    system_prompt = render_prompt(
+        "extract_job_description",
+        valid_topics=VALID_TOPICS,
     )
 
     job = call_llm_parsed(
@@ -102,4 +89,41 @@ def extract_job_description(raw_text: str) -> JobDescription:
     job.required_topics = [t for t in job.required_topics if t in VALID_TOPICS]
 
     return job
+
+
+def evaluate_job_match(job: JobDescription, profile: UserProfile) -> JobMatchResult:
+    """Evaluate how well a candidate's profile matches a job description.
+
+    Sends the job description and candidate profile to the LLM to produce a
+    structured match assessment including required qualifications, gaps,
+    strengths, and an overall recommendation.
+
+    Args:
+        job: The target job description.
+        profile: The candidate's full profile.
+
+    Returns:
+        A validated :class:`JobMatchResult` instance.
+    """
+    system_prompt = (
+        "You are evaluating how well a candidate matches a job description. "
+        "Compare the required qualifications and topics with the candidate's "
+        "profile. Identify matching qualifications, gaps, and strengths. "
+        "Output valid JSON matching the JobMatchResult schema."
+    )
+
+    user_prompt = (
+        f"JOB: {job.title} at {job.company}\n"
+        f"REQUIRED TOPICS: {', '.join(job.required_topics)}\n"
+        f"CANDIDATE: {profile.personal_info.name}\n"
+        f"PROFILE JSON:\n{profile.model_dump_json(indent=2)}"
+    )
+
+    return call_llm_parsed(
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        response_model=JobMatchResult,
+        model=EXTRACTION_MODEL,
+        temperature=0.2,
+    )
 

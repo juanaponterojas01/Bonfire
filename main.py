@@ -5,9 +5,11 @@ Usage examples::
     python main.py --job-file data/fake_job_german.txt --language de
     python main.py --job-text "We are hiring a CFD engineer..." --language en
     python main.py --url "https://example.com/careers/software-engineer" --language es
+    python main.py --clean-output
 """
 
 import argparse
+import shutil
 import sys
 from pathlib import Path
 
@@ -43,7 +45,7 @@ def _build_argument_parser() -> argparse.ArgumentParser:
         description="Bonfire AI Job Application Generator"
     )
 
-    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group = parser.add_mutually_exclusive_group()
     input_group.add_argument(
         "--job-text",
         type=str,
@@ -68,6 +70,12 @@ def _build_argument_parser() -> argparse.ArgumentParser:
         help="Output language (default: de)",
     )
 
+    parser.add_argument(
+        "--clean-output",
+        action="store_true",
+        help="Remove all generated output folders and exit",
+    )
+
     return parser
 
 
@@ -75,6 +83,33 @@ def main() -> None:
     """Main entry point for the CLI."""
     parser = _build_argument_parser()
     args = parser.parse_args()
+
+    # --- Handle --clean-output standalone flag ---
+    if args.clean_output:
+        if args.url or args.job_file or args.job_text:
+            print(
+                "Error: --clean-output cannot be combined with --url, "
+                "--job-file, or --job-text.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+        output_dir = Path("output")
+        if output_dir.exists():
+            for item in output_dir.iterdir():
+                if item.is_dir():
+                    shutil.rmtree(item)
+        print("All output folders removed.")
+        sys.exit(0)
+
+    # --- Require exactly one input source when not using --clean-output ---
+    if not args.url and not args.job_file and not args.job_text:
+        print(
+            "Error: one of --url, --job-file, or --job-text is required "
+            "(or use --clean-output alone).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     if args.url:
         try:
@@ -90,12 +125,15 @@ def main() -> None:
         except (ValueError, RuntimeError) as e:
             print(f"Error fetching URL: {e}", file=sys.stderr)
             sys.exit(1)
+        source = args.url
     elif args.job_file:
         job_text = _read_job_file(args.job_file)
+        source = args.job_file
     else:
         job_text = args.job_text
+        source = args.job_text[:80]
 
-    result = run_job_pipeline(job_text, args.language)
+    result = run_job_pipeline(job_text, args.language, source=source)
 
     if result["success"]:
         print("Application generated successfully!")

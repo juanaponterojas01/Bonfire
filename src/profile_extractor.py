@@ -4,10 +4,6 @@ This module provides the first layer of the Bonfire pipeline. It reads
 candidate background information from a directory of Markdown files and
 uses an LLM to build a structured ``UserProfile`` object, which is then
 validated via Pydantic and persisted as JSON.
-
-Attributes:
-    PROFILE_EXTRACTION_SYSTEM_PROMPT: System prompt sent to the LLM instructing
-        it to extract a professional profile with precise topic tags.
 """
 
 import json
@@ -15,6 +11,7 @@ from pathlib import Path
 
 from src.models import UserProfile
 from src.llm_client import call_llm_parsed, EXTRACTION_MODEL
+from src.utils import render_prompt
 
 RELEVANT_FIELDS = [
     "thermal_simulation", "cfd", "experiments", "mechanical_design",
@@ -22,14 +19,6 @@ RELEVANT_FIELDS = [
     "programming", "machine_learning",
 ]
 
-
-PROFILE_EXTRACTION_SYSTEM_PROMPT = (
-    "You are extracting a structured professional profile from documents. "
-    "Be exhaustive and precise — do not invent information. "
-    "Output valid JSON matching the UserProfile schema. Only include information explicitly stated. "
-    "Tag each project with relevant topics from: "
-    f"{RELEVANT_FIELDS}"
-)
 
 def _read_md_files(md_directory: str) -> dict[str, str]:
     """Read all .md files in *md_directory* and return a mapping of filename -> content.
@@ -100,7 +89,10 @@ def extract_profile_from_md(md_directory: str, output_json_path: str) -> UserPro
     user_prompt = _build_extraction_prompt(md_contents)
 
     profile = call_llm_parsed(
-        system_prompt=PROFILE_EXTRACTION_SYSTEM_PROMPT,
+        system_prompt=render_prompt(
+            "extract_profile",
+            relevant_fields=RELEVANT_FIELDS,
+        ),
         user_prompt=user_prompt,
         model=EXTRACTION_MODEL,
         temperature=0.2,

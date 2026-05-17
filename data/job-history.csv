@@ -1,0 +1,4 @@
+title,company,location,receiver_name,required_topics,url_or_file,state
+"Wissenschaftliche/r Mitarbeiter/in – Doktorand/in (w/m/d) – Modellierung, Analytik und Lebensdauerprognose von Batterien (mit Promotionsmöglichkeit)",RWTH Aachen University,"Aachen, Germany",Herr Heinrich Ditler,experiments;programming;thermal_simulation,https://www.elektrotechnik.rwth-aachen.de/go/id/kpux/file/V000010651/,pending
+CFD-Simulationsingenieur (m/w/d) für thermische Systeme,ThermoTech GmbH,Hannover,,bewerbung@thermotech.de,thermal_simulation;cfd;experiments;renewable_energy;fluid_dynamics;thermodynamics;programming,data/fake_job_german.txt,pending
+CFD Simulation Engineer - Thermal Systems,HeatFlow Solutions Ltd,"Manchester, United Kingdom",Ms. Sarah Jenkins,applications.thermotech@web.com,cfd;thermal_simulation;thermodynamics;programming,data/fake_job_english.txt,pending

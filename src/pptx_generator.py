@@ -90,8 +90,6 @@ def _build_cv_context(
 def render_cv(
     template_path: str | Path,
     output_path: str | Path,
-    job: JobDescription,
-    profile: UserProfile,
     dynamic_zones: CVDynamicZones,
     language: str,
 ) -> str:

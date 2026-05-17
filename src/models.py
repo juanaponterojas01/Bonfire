@@ -181,6 +181,7 @@ class JobDescription(BaseModel):
     company: str
     location: str
     receiver_name: Optional[str] = None  # Contact person, e.g. "Dr. Müller"
+    email: str = ""  # Contact email from the job posting
     raw_text: str
     required_topics: list[str]  # Extracted by AI later
 

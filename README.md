@@ -40,6 +40,7 @@ Job Posting (raw text)
        │        ┌───────────────────┐
        └───────▶│  content_writer   │───▶ Cover letter body (free text)
                 │  (LLM generation) │───▶ CVDynamicZones (structured JSON)
+                │                   │───▶ email.yaml (inline format)
                 └───────────────────┘
                        │
                        ▼
@@ -55,7 +56,7 @@ Job Posting (raw text)
        └──────────────────┘
 ```
 
-> **Note on performance:** Profile loading, job parsing, and background reading run in parallel via `ThreadPoolExecutor`. Cover-letter generation and CV dynamic-zone generation also run in parallel, cutting the effective critical path from four sequential LLM calls to two parallel rounds.
+> **Note on performance:** Profile loading, job parsing, and background reading run in parallel via `ThreadPoolExecutor`. Cover-letter generation, CV dynamic-zone generation, and email generation also run in parallel, cutting the effective critical path from five sequential LLM calls to two parallel rounds.
 
 ### Key Modules
 
@@ -69,7 +70,7 @@ Job Posting (raw text)
 | `src/pptx_generator.py` | Renders CVs by replacing `[placeholder]` strings in PPTX templates |
 | `src/llm_client.py` | Lightweight LLM client wrapping `litellm` with two-model support and JSON parsing |
 | `src/models.py` | Pydantic models: `UserProfile`, `JobDescription`, `CVDynamicZones`, `PersonalInfo`, etc. |
-| `src/utils.py` | Date formatting, localized filename generation |
+| `src/utils.py` | Date formatting, localized filename generation, `render_prompt()` template loader |
 
 ### Data Models
 
@@ -80,7 +81,7 @@ All data is validated through Pydantic models defined in `src/models.py`:
 - **`ProjectSummary`** — Project/experience entry with name, type, role, duration, technologies, topics
 - **`Skill`** — Skill with category (technical/software/language/soft) and proficiency level
 - **`UserProfile`** — Top-level profile aggregating personal info, education, experience, skills, projects
-- **`JobDescription`** — Job title, company, location, receiver name, raw text, required topics
+- **`JobDescription`** — Job title, company, location, receiver name, contact email, raw text, required topics
 - **`CVDynamicZones`** — AI-generated professional summary, bachelor subjects, master subjects
 
 ---
@@ -108,12 +109,24 @@ Place your templates in `templates/{lang}/` where `{lang}` is `en`, `de`, or `es
 
 ### 2. System Prompts
 
-Every LLM call uses a system prompt that you can edit to change writing style, tone, structure, or extraction behavior:
+Every LLM system prompt now lives in `system_prompts/` as a standalone Markdown file. You can edit any prompt to change the writing style, tone, structure, or extraction behavior — no Python code changes required.
 
-- **`src/profile_extractor.py`** — `PROFILE_EXTRACTION_SYSTEM_PROMPT`: Controls how the LLM extracts your profile from Markdown files. Edit the `RELEVANT_FIELDS` list to change the domain topic vocabulary.
-- **`src/job_evaluator.py`** — System prompts for extracting job title, company, topics, and receiver name.
-- **`src/content_writer.py`** — Prompts for cover letter generation (paragraph structure, tone per country) and CV dynamic zones.
+Prompts are loaded at runtime by the `render_prompt()` utility in `src/utils.py`, which:
+- Reads the `.md` file from `system_prompts/<template_name>.md`
+- Substitutes every `{variable_name}` placeholder with the corresponding keyword argument passed from Python
+- Sorts substitutions by descending key length (longest keys first) to avoid accidental partial matches when one variable name is a substring of another
+- Raises a clear `ValueError` listing any unreplaced `{variable}` placeholders, helping you diagnose mismatches between the template and the code
 
+| Template File | Used By | Purpose | Placeholder Variables |
+|---|---|---|---|
+| `extract_profile.md` | `profile_extractor.py` | Extract structured `UserProfile` from Markdown background files | `{relevant_fields}` |
+| `extract_job_topics.md` | `job_evaluator.py` | Select domain topics from a predefined vocabulary | `{valid_topics}` |
+| `extract_job_description.md` | `job_evaluator.py` | Extract structured `JobDescription` (title, company, location, receiver, email, topics) | `{valid_topics}` |
+| `cover_letter.md` | `content_writer.py` | Generate personalized 4-paragraph cover letter body | `{text_language}`, `{job_raw_text}`, `{profile_summary}`, `{relevant_details}`, `{country}` |
+| `cv_dynamic_zones.md` | `content_writer.py` | Generate professional summary and subject descriptions for CV | `{text_language}` |
+| `email_yaml.md` | `content_writer.py` | Generate YAML-formatted application email with subject, greeting, body, farewell | `{text_language}`, `{job_raw_text}`, `{profile_json}`, `{job_title}`, `{job_email}`, `{candidate_name}` |
+
+> **Tip:** The topic vocabulary is defined by the `RELEVANT_FIELDS` list in `src/profile_extractor.py` and reused as `VALID_TOPICS` in `src/job_evaluator.py`. Editing that list updates the domain topics available to both extraction prompts.
 
 ### 3. LLM Models
 
@@ -193,6 +206,9 @@ python main.py --job-file data/fake_job_spanish.txt --language es
 
 # From a URL
 python main.py --url "https://example.com/careers/software-engineer" --language en
+
+# Clean all generated output folders
+python main.py --clean-output
 ```
 
 ### CLI Arguments
@@ -203,8 +219,9 @@ python main.py --url "https://example.com/careers/software-engineer" --language 
 | `--job-text` | Raw job posting text passed directly on the command line |
 | `--url` | URL of a job posting to fetch and scrape |
 | `--language` | Output language: `en` (English), `de` (German), or `es` (Spanish). Default: `de` |
+| `--clean-output` | Remove all generated output folders and exit |
 
-> **Note:** `--job-file`, `--job-text`, and `--url` are mutually exclusive — you must provide exactly one.
+> **Note:** `--job-file`, `--job-text`, and `--url` are mutually exclusive — you must provide exactly one (or use `--clean-output` alone).
 
 ### What Happens
 
@@ -215,14 +232,17 @@ The pipeline runs in two parallelized phases to minimize wall-clock time:
 2. **Job Parsing** — Sends the job posting to the LLM to extract title, company, location, required topics, and contact person with gender detection.
 3. **Background Reading** — Loads the language-specific background summary.
 
-**Phase 2 (parallel)** — Once Phase 1 completes, the two content-generation LLM calls run concurrently:
+**Phase 2 (parallel)** — Once Phase 1 completes, the three content-generation LLM calls run concurrently:
 4. **Cover Letter Generation** — Writes a tailored 4-paragraph cover letter body using the writer model, grounded in your actual profile.
 5. **CV Dynamic Zones** — Generates a professional summary and subject descriptions tailored to the job.
+6. **Email Generation** — Generates a concise YAML-formatted application email with subject, recipient, greeting, body, and farewell using the writer model.
 
 **Phase 3 (sequential)** — Fast, local processing:
-6. **Document Rendering** — Fills the DOCX and PPTX templates with all generated content and saves the final files.
+7. **File Writing** — Saves the generated email to `email.yaml`, fills the DOCX and PPTX templates with all generated content, and writes the final files.
 
 > **URL Scraping Limitations:** Bonfire fetches job pages via [Jina AI Reader](https://r.jina.ai/), which handles JavaScript-rendered content better than a plain HTTP request. However, some sites (e.g., LinkedIn, Indeed) block external readers or require authentication. When a URL fails because it is blocked or returns no usable text, it is automatically logged to `data/blacklist.txt` so you can avoid those sites in the future. If `--url` fails, save the text manually and use `--job-file` or `--job-text` instead.
+>
+> **Job History Logging:** Every job processed by the pipeline is automatically recorded in `data/job-history.csv` with an initial state of `pending`. This history tracks each application by company, title, location, contact email, and source URL. A future automation feature will allow updating the state to `sent` once an application has been submitted, enabling a fully automated job-search workflow.
 
 ### Output
 
@@ -232,8 +252,11 @@ Generated documents are saved to `output/{company_name}/`:
 output/
 └── Acme Corp/
     ├── J.Doe_Anschreiben.docx      (cover letter)
-    └── J.Doe_Lebenslauf.pptx       (CV)
+    ├── J.Doe_Lebenslauf.pptx       (CV)
+    └── email.yaml                  (application email in LLM-generated format)
 ```
+
+> **Note:** `email.yaml` is generated entirely by the LLM using an inline format prompt — no DOCX/PPTX template or post-processing is involved. The output begins with `subject:` and `to:` YAML-style fields followed by the email greeting, body, and farewell.
 
 Filenames are localized per language and abbreviated with the user's initials (e.g., `J.Doe_cover_letter.docx`, `J.Doe_carta_de_motivación.docx`).
 
@@ -281,8 +304,9 @@ bonfire_app/
 ├── main.py                     # CLI entry point
 ├── requirements.txt            # Python dependencies
 ├── .env                        # OPENCODE_API_KEY (not committed)
-├── data/
+data/
 │   ├── user_profile.json       # Cached structured profile (auto-generated)
+│   ├── job-history.csv         # Job application history log (auto-generated)
 │   ├── blacklist.txt           # URLs that failed scraping (auto-generated)
 │   ├── background_md/          # Your background as Markdown files
 │   │   ├── background_deutsch.md
@@ -301,7 +325,14 @@ bonfire_app/
 │   ├── pptx_generator.py       # PPTX template rendering
 │   ├── llm_client.py           # LLM client (litellm wrapper)
 │   ├── models.py               # Pydantic data models
-│   └── utils.py                # Date formatting, filenames
+│   └── utils.py                # Date formatting, filenames, template rendering
+├── system_prompts/              # LLM system prompts as editable Markdown templates
+│   ├── cover_letter.md
+│   ├── cv_dynamic_zones.md
+│   ├── email_yaml.md
+│   ├── extract_job_topics.md
+│   ├── extract_job_description.md
+│   └── extract_profile.md
 ├── templates/
 │   ├── de/                     # German templates
 │   │   ├── cover_letter_template.docx
@@ -310,8 +341,8 @@ bonfire_app/
 │   │   ├── cover_letter_template.docx
 │   │   └── cv_template.pptx
 │   └── es/                     # Spanish templates
-│       ├── cover_letter_template.docx
-│       └── cv_template.pptx
+│   │   ├── cover_letter_template.docx
+│   │   └── cv_template.pptx
 ├── output/                     # Generated documents (auto-created)
 ├── tests/                      # Test suite
 ├── scripts/                    # Utility scripts

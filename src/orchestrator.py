@@ -13,10 +13,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.models import JobDescription, UserProfile
 from src.profile_extractor import extract_profile_from_md
 from src.job_evaluator import extract_job_description
-from src.content_writer import generate_cover_letter, generate_cv_dynamic_zones
+from src.content_writer import generate_cover_letter, generate_cv_dynamic_zones, generate_email_yaml
 from src.docx_generator import render_cover_letter
 from src.pptx_generator import render_cv
 from src.utils import set_file_name
+from src.job_history import log_job_entry
 
 
 PROFILE_JSON_PATH = "data/user_profile.json"
@@ -79,21 +80,26 @@ def _parse_job_description(job_text: str) -> JobDescription:
 def run_job_pipeline(
     job_text: str,
     language: str,
+    source: str = "",
 ) -> dict:
     """Execute job application steps pipeline.
 
     Loads or extracts the user profile, parses the job description,
-    generates tailored cover letter and CV content, and renders
-    the final documents.
+    generates tailored cover letter, CV content, and application email,
+    then renders the final documents.
 
     Args:
         job_text: The raw text of the job posting.
         language: Language code for generated content (``"en"``, ``"de"``, ``"es"``).
-        
+        source:   URL or file path from which the job was obtained.
+                  Defaults to ``""``. When non-empty, the job is
+                  automatically logged to ``data/job-history.csv``
+                  with state ``"pending"``.
 
     Returns:
-        A dictionary with ``"success": True`` and output file paths on
-        success, or ``"success": False`` with a ``"reason"`` on failure.
+        A dictionary with ``"success": True`` and output file paths
+        (``"cover_letter"``, ``"cv"``, ``"email"``) on success, or
+        ``"success": False`` with a ``"reason"`` on failure.
     """
     try:
         print("loading and parsing job description, and reading background...\n")
@@ -104,23 +110,33 @@ def run_job_pipeline(
 
             profile = future_profile.result()
             job = future_job.result()
+            if source:
+                log_job_entry(job, source=source, state="pending")
             relevant_details = future_summary.result()
 
         # Phase 2: Cover letter and CV zones run concurrently
-        print("Generating cover letter and CV dynamic zones...\n")
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        print("Generating cover letter, CV dynamic zones, and email...\n")
+        with ThreadPoolExecutor(max_workers=3) as executor:
             future_letter = executor.submit(
                 generate_cover_letter, job, profile, relevant_details, language
             )
             future_cv = executor.submit(
                 generate_cv_dynamic_zones, job, profile, language
             )
+            future_email = executor.submit(
+                generate_email_yaml, job, profile, language
+            )
 
             letter_body = future_letter.result()
             dynamic_zones = future_cv.result()
+            email_yaml_content = future_email.result()
 
         output_dir = Path("output") / job.company
         output_dir.mkdir(parents=True, exist_ok=True)
+
+        print("Creating email...\n")
+        email_path = output_dir / "email.yaml"
+        email_path.write_text(email_yaml_content, encoding="utf-8")
 
         print("Creating cover letter...\n")
         cover_letter_path = render_cover_letter(
@@ -134,8 +150,6 @@ def run_job_pipeline(
         cv_path = render_cv(
             template_path=f"templates/{language}/cv_template.pptx",
             output_path=str(output_dir / set_file_name("curriculum", language, profile.personal_info)),
-            job=job,
-            profile=profile,
             dynamic_zones=dynamic_zones,
             language=language,
         )
@@ -147,6 +161,7 @@ def run_job_pipeline(
             "output_dir": str(output_dir),
             "cover_letter": cover_letter_path,
             "cv": cv_path,
+            "email": str(email_path),
         }
 
     except Exception as e:
