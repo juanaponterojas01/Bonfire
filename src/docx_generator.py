@@ -150,8 +150,8 @@ def _build_cover_letter_context(
 
 
 def render_cover_letter(
-    template_path: str,
-    output_path: str,
+    template_path: str | Path,
+    output_path: str | Path,
     job: JobDescription,
     letter_body: str,
     language: str,
@@ -166,7 +166,6 @@ def render_cover_letter(
         template_path: Filesystem path to the ``.docx`` template file.
         output_path: Filesystem path where the rendered document will be saved.
         job: The job description to pull company and location data from.
-        profile: The user profile to pull personal information from.
         letter_body: The AI-generated cover letter body text.
         language: Language code for date formatting (``"en"``, ``"de"``, ``"es"``).
 
@@ -179,7 +178,7 @@ def render_cover_letter(
         OSError: If the output directory cannot be created or the document
             cannot be saved to *output_path*.
     """
-    doc = Document(template_path)
+    doc = Document(str(template_path))
 
     context = _build_cover_letter_context(job, letter_body, language)
 
@@ -188,6 +187,6 @@ def render_cover_letter(
 
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
-    doc.save(output_path)
+    doc.save(str(output_path))
 
-    return output_path
+    return str(output_path)

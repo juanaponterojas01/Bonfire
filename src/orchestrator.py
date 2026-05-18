@@ -4,12 +4,9 @@ This module provides the main workflow engine. Given a job description and a
 language, it loads the user profile, evaluates the job match, generates
 tailored content, and renders the final application documents.
 """
-import os
-import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.models import JobDescription, UserProfile
 from src.profile_extractor import extract_profile_from_md
 from src.job_evaluator import extract_job_description
@@ -164,10 +161,7 @@ def run_job_pipeline(
             "email": str(email_path),
         }
 
+    except (KeyboardInterrupt, SystemExit):
+        raise
     except Exception as e:
         return {"success": False, "reason": str(e)}
-
-
-if __name__ == "__main__":
-
-     _load_summary("de")

@@ -4,8 +4,8 @@ This module defines all data structures used throughout the application,
 including models for personal information, education history, project
 summaries, skills, user profiles, job descriptions, qualification matching
 results, and dynamically generated CV content zones. All models inherit
-from ``pydantic.BaseModel`` to provide automatic validation, serialisation,
-and deserialisation.
+from ``pydantic.BaseModel`` to provide automatic validation, serialization,
+and deserialization.
 
 Typical usage example::
 
@@ -20,7 +20,7 @@ Typical usage example::
 """
 
 from pydantic import BaseModel
-from typing import Optional
+from typing import Literal
 
 
 class PersonalInfo(BaseModel):
@@ -43,7 +43,7 @@ class PersonalInfo(BaseModel):
     address: str
     email: str
     phone: str
-    linkedin: Optional[str] = None
+    linkedin: str | None = None
 
 
 class Education(BaseModel):
@@ -69,7 +69,7 @@ class Education(BaseModel):
     degree: str
     institution: str
     subjects: list[str]
-    thesis_title: Optional[str] = None
+    thesis_title: str | None = None
     year: str
 
 
@@ -99,7 +99,7 @@ class ProjectSummary(BaseModel):
     """
 
     name: str
-    type: str  # "thesis", "industry", "academic"
+    type: Literal["thesis", "industry", "academic"]
     role: str
     duration: str
     key_contribution: str
@@ -124,9 +124,9 @@ class Skill(BaseModel):
             ``"expert"``.
     """
 
-    category: str  # "technical", "software", "language", "soft"
+    category: Literal["technical", "software", "language", "soft"]
     name: str
-    proficiency: str  # "beginner", "intermediate", "advanced", "expert"
+    proficiency: Literal["beginner", "intermediate", "advanced", "expert"]
 
 
 class UserProfile(BaseModel):
@@ -180,8 +180,8 @@ class JobDescription(BaseModel):
     title: str
     company: str
     location: str
-    receiver_name: Optional[str] = None  # Contact person, e.g. "Dr. Müller"
-    email: str = ""  # Contact email from the job posting
+    receiver_name: str | None = None  # Contact person, e.g. "Dr. Müller"
+    email: str | None = None  # Contact email from the job posting
     raw_text: str
     required_topics: list[str]  # Extracted by AI later
 
@@ -201,14 +201,14 @@ class QualificationMatch(BaseModel):
             supports or contradicts the requirement. Empty string when
             no evidence is found.
         match_level: Qualitative strength of the match. Must be one of
-            ``"strong"`` (clear, explicit evidence), ``"partial"``
-            (indirect or incomplete evidence), or ``"missing"`` (no
-            supporting evidence found).
+            ``"strong"`` (clear, explicit evidence), ``"moderate"``
+            (indirect or incomplete evidence), ``"weak"`` (minimal
+            supporting evidence), or ``"none"`` (no evidence found).
     """
 
     requirement: str
     user_evidence: str
-    match_level: str  # "strong", "partial", "missing"
+    match_level: Literal["strong", "moderate", "weak", "none"]
 
 
 class JobMatchResult(BaseModel):
@@ -230,7 +230,8 @@ class JobMatchResult(BaseModel):
             user's profile exceeds or strongly meets the job requirements
             (e.g. "10+ years of Python exceeds the 3-year requirement").
         recommendation: Overall hiring recommendation. Must be one of
-            ``"strong_match"``, ``"moderate_match"``, or ``"weak_match"``.
+            ``"strong_match"``, ``"moderate_match"``, ``"weak_match"``,
+            or ``"no_match"``.
         reasoning: Free-text explanation justifying the overall
             recommendation, referencing specific matches and gaps.
     """
@@ -238,7 +239,7 @@ class JobMatchResult(BaseModel):
     required_qualifications: list[QualificationMatch]
     gaps: list[str]
     strengths: list[str]
-    recommendation: str  # "strong_match", "moderate_match", "weak_match"
+    recommendation: Literal["strong_match", "moderate_match", "weak_match", "no_match"]
     reasoning: str
 
 
@@ -256,7 +257,7 @@ class CVDynamicZones(BaseModel):
         bachelor_subjects: One sentence explaining 2 or 3 relevant academic
             subjects from the user's bachelor's degree.
         master_subjects: One sentence explaining 2 or 3 relevant academic
-            subjects from the user's master's degree..
+            subjects from the user's master's degree.
     """
 
     professional_summary: str

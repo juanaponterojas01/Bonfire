@@ -32,19 +32,21 @@ _MONTHS_MAPPING: dict[str, list[str]] = {
 }
 
 
-def create_dir(dir_location: str | Path) -> None:
-    """
-    Create a directory at the given path. Creates parent directories as needed.
+def create_dir(dir_location: str | Path) -> Path:
+    """Create a directory at the given path. Creates parent directories as needed.
 
     Args:
         dir_location: The directory path to create.
+
+    Returns:
+        The created Path object.
+
+    Raises:
+        OSError: If directory creation fails.
     """
-    try:
-        Path(dir_location).mkdir(parents=True, exist_ok=True)
-    except PermissionError:
-        print(f"Permission denied: Unable to create '{dir_location}'.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    path = Path(dir_location)
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def get_todays_date(language: str) -> str:
@@ -69,7 +71,7 @@ def get_todays_date(language: str) -> str:
     return month + " " + today_as_list[1] + " " + today_as_list[2]
 
 
-def set_file_name(apply_doc: str, language: str, personal_info:PersonalInfo) -> str:
+def set_file_name(apply_doc: str, language: str, personal_info: PersonalInfo) -> str:
     """
     Return the localized filename for a given application document type.
 

@@ -105,12 +105,7 @@ def evaluate_job_match(job: JobDescription, profile: UserProfile) -> JobMatchRes
     Returns:
         A validated :class:`JobMatchResult` instance.
     """
-    system_prompt = (
-        "You are evaluating how well a candidate matches a job description. "
-        "Compare the required qualifications and topics with the candidate's "
-        "profile. Identify matching qualifications, gaps, and strengths. "
-        "Output valid JSON matching the JobMatchResult schema."
-    )
+    system_prompt = render_prompt("evaluate_job_match")
 
     user_prompt = (
         f"JOB: {job.title} at {job.company}\n"

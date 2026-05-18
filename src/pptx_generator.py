@@ -65,15 +65,11 @@ def _format_relevant_subjects(dynamic_zones: CVDynamicZones) -> str:
 
 def _build_cv_context(
     dynamic_zones: CVDynamicZones,
-    language: str,
 ) -> dict[str, str]:
     """Build a context dictionary mapping placeholders to formatted values.
 
     Args:
-        job: The target job description.
-        profile: The user's complete profile.
         dynamic_zones: The AI-generated dynamic CV content.
-        language: Language code for date formatting.
 
     Returns:
         A dictionary where keys are placeholder strings and values are
@@ -98,8 +94,6 @@ def render_cv(
     Args:
         template_path: Path to the .pptx template file.
         output_path: Path where the rendered CV will be saved.
-        job: The target job description.
-        profile: The user's complete profile.
         dynamic_zones: The AI-generated dynamic CV content.
         language: Language code for date formatting.
 
@@ -107,7 +101,7 @@ def render_cv(
         The output path as a string.
     """
     prs = Presentation(str(template_path))
-    context = _build_cv_context(dynamic_zones, language)
+    context = _build_cv_context(dynamic_zones)
 
     for placeholder, value in context.items():
         _replace_text_in_pptx(prs, placeholder, value)
