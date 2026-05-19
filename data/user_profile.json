@@ -208,13 +208,23 @@
     },
     {
       "category": "software",
-      "name": "Sphinx",
+      "name": "Hugging Face",
+      "proficiency": "beginner"
+    },
+    {
+      "category": "software",
+      "name": "AI supported programming",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "AI driven software",
       "proficiency": "intermediate"
     },
     {
       "category": "software",
-      "name": "Hugging Face",
-      "proficiency": "beginner"
+      "name": "AI agentic workflows",
+      "proficiency": "intermediate"
     },
     {
       "category": "language",
@@ -337,7 +347,6 @@
       "technologies": [
         "Python",
         "PyQt6",
-        "Sphinx",
         "JSON"
       ],
       "topics": [
@@ -345,7 +354,7 @@
       ]
     },
     {
-      "name": "Bonfire app - Job Applications powered with AI",
+      "name": "Job Applications powered with AI",
       "type": "academic",
       "role": "Developer",
       "duration": "Not specified",
@@ -356,7 +365,8 @@
       ],
       "topics": [
         "programming",
-        "machine_learning"
+        "agentic programming",
+        "AI integration in software"
       ]
     }
   ]

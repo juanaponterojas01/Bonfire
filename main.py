@@ -2,7 +2,7 @@
 
 Usage examples::
 
-    python main.py --job-file data/fake_job_german.txt --language de
+    python main.py --file data/fake_job_german.txt --language de
     python main.py --job-text "We are hiring a CFD engineer..." --language en
     python main.py --url "https://example.com/careers/software-engineer" --language es
     python main.py --clean-output
@@ -52,7 +52,7 @@ def _build_argument_parser() -> argparse.ArgumentParser:
         help="Raw job description text",
     )
     input_group.add_argument(
-        "--job-file",
+        "--file",
         type=str,
         help="Path to a file containing the job description",
     )
@@ -86,10 +86,10 @@ def main() -> None:
 
     # --- Handle --clean-output standalone flag ---
     if args.clean_output:
-        if args.url or args.job_file or args.job_text:
+        if args.url or args.file or args.job_text:
             print(
                 "Error: --clean-output cannot be combined with --url, "
-                "--job-file, or --job-text.",
+                "--file, or --job-text.",
                 file=sys.stderr,
             )
             sys.exit(1)
@@ -103,9 +103,9 @@ def main() -> None:
         sys.exit(0)
 
     # --- Require exactly one input source when not using --clean-output ---
-    if not args.url and not args.job_file and not args.job_text:
+    if not args.url and not args.file and not args.job_text:
         print(
-            "Error: one of --url, --job-file, or --job-text is required "
+            "Error: one of --url, --file, or --job-text is required "
             "(or use --clean-output alone).",
             file=sys.stderr,
         )
@@ -126,9 +126,9 @@ def main() -> None:
             print(f"Error fetching URL: {e}", file=sys.stderr)
             sys.exit(1)
         source = args.url
-    elif args.job_file:
-        job_text = _read_job_file(args.job_file)
-        source = args.job_file
+    elif args.file:
+        job_text = _read_job_file(args.file)
+        source = args.file
     else:
         job_text = args.job_text
         source = args.job_text[:80]

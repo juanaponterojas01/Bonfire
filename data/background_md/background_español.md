@@ -17,7 +17,7 @@
 - **2022 – 2024: Máster en Ingeniería Mecánica en la Technische Universität Braunschweig**
   - Especialización: Ingeniería Energética y de Procesos.
   - **Noviembre 2022 – Marzo 2023**: Trabajo de investigación en el Instituto de Motores de Propulsión y Turbomáquinas (IFAS) – Implementación de una técnica novedosa de medición en la placa trasera para analizar el comportamiento de basculamiento de sellos flotantes de anillo de carbón; realización de ensayos experimentales, procesamiento de datos en MATLAB, análisis de incertidumbre e interpretación de perfiles de presión complejos.
-  - **Abril – Octubre 2024**: Tesis de máster en el Instituto de Termodinámica – Desarrollo de una estrategia óptima de carga para un sistema de baterías mediante control óptimo numérico (Direct Multiple Shooting, CasADi); modelado en Modelica/TIL_AddOn_Battery con un circuito equivalente 2RC y modelo térmico de parámetros concentrados (lumped-parameter).
+  - **Abril – Octubre 2024**: Tesis de máster en el Instituto de Termodinámica – Desarrollo de una estrategia óptima de carga para un sistema de baterías mediante control óptimo numérico (Direct Multiple Shooting, CasADi); modelado en Modelica con un modelo eléctrico y térmico acoplados entre sí.
   - Graduado como **Master of Science** el 19 de noviembre de 2024 con una calificación global de **notable (2,5)** según el sistema alemán.
 
 - **Marzo 2026: Formación complementaria en aprendizaje profundo (Deep Learning)**
@@ -26,7 +26,7 @@
 - **Proyectos de programación (en curso)**
   - Desarrollo de un *gemelo digital* para la estimación del estado de carga (SOC) de baterías de ion-litio mediante LSTM informado por física (physics-informed LSTM).
   - Desarrollo de una herramienta en Python para la generación automatizada de documentos de solicitud de empleo (cartas de motivación, currículums, correos electrónicos) con interfaz PyQt6, soporte multilingüe y vista previa en PDF.
-  - Desarrollo de la *Bonfire App* – Automatización de solicitudes de empleo asistida por inteligencia artificial mediante modelos de lenguaje de gran tamaño (LLMs).
+  - Desarrollo del *Bonfire* software – Automatización de solicitudes de empleo asistida por inteligencia artificial mediante modelos de lenguaje de gran tamaño (LLMs).
 
 ---
 
@@ -38,7 +38,7 @@
 Gracias a su tesis de máster y a las prácticas en TLK-Thermo, Juan cuenta con conocimientos sólidos en modelado termodinámico de sistemas de baterías. Domina la elaboración de circuitos equivalentes electro-térmicos (Thevenin, modelo 2RC), la consideración del comportamiento térmico reversible e irreversible, y la implementación de estrategias de reducción de potencia (derating) en función del SOC y la temperatura. Su experiencia con Modelica y la biblioteca de baterías TIL le permite simular de forma integral sistemas complejos acoplados formados por batería, circuito de refrigeración y electrónica de potencia.
 
 **2. Simulación numérica y optimización**
-Su formación en ingeniería se caracteriza por un trabajo intensivo con métodos numéricos. En su trabajo de grado desarrolló un solucionador CFD propio para flujos incompresibles utilizando diferencias finitas compactas de alto orden y un esquema temporal ADI. En su tesis de máster aplicó esta capacidad analítica a la optimización: formuló y resolvió un problema de control óptimo (OCP) mediante disparo múltiple directo (Direct Multiple Shooting) con CasADi e IPOPT. Esta combinación de modelado físico y optimización matemática constituye una de sus competencias más destacadas.
+Su formación en ingeniería se caracteriza por un trabajo intensivo con métodos numéricos. En su trabajo de grado desarrolló un solucionador CFD propio para flujos incompresibles utilizando diferencias finitas compactas de alto orden y un esquema temporal ADI. En su tesis de máster aplicó esta capacidad analítica a la optimización: formuló y resolvió un problema de control óptimo (OCP) mediante disparo múltiple directo (Direct Multiple Shooting) con CasADi. Esta combinación de modelado físico y optimización matemática constituye una de sus competencias más destacadas.
 
 **3. Desarrollo de software en Python y automatización**
 Durante sus prácticas en TLK-Thermo y en sus proyectos personales, Juan ha acumulado una amplia experiencia en desarrollo con Python. Creó software backend para la conversión de datos entre archivos JSON y clases de Python, implementó interfaces gráficas con PyQt6 y documentó proyectos de manera profesional con Sphinx. Su capacidad para traducir problemas de ingeniería en software robusto y mantenible se refleja también en sus propias herramientas, como el generador de solicitudes de empleo y la aplicación de gemelo digital para baterías.

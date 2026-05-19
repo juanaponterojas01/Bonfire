@@ -17,7 +17,7 @@
 - **2022 – 2024: Master's Degree in Mechanical Engineering at Technische Universität Braunschweig**
   - Focus: Energy and Process Engineering.
   - **November 2022 – March 2023**: Student research project at the Institute for Flight Propulsion and Turbomachinery (IFAS) – Implementation of a novel back-plate measurement technique to analyze the tilting behavior of carbon floating ring seals; conducting experiments, data evaluation in MATLAB, error analysis, and interpretation of complex pressure profiles.
-  - **April – October 2024**: Master's thesis at the Institute for Thermodynamics – Development of an optimal charging strategy for a battery system using numerical optimal control (Direct Multiple Shooting, CasADi); modeling in Modelica/TIL_AddOn_Battery with a 2RC equivalent circuit and thermal lumping.
+  - **April – October 2024**: Master's thesis at the Institute for Thermodynamics – Development of an optimal charging strategy for a battery system using numerical optimal control (Direct Multiple Shooting, CasADi); modeling in Modelica with a electrical and thermal model.
   - Graduated as **Master of Science** on November 19, 2024, with an overall grade of **good (2.5)**.
 
 - **March 2026: Continuing Education in Deep Learning**
@@ -26,7 +26,7 @@
 - **Programming Projects (Ongoing)**
   - Development of a *Digital Twin* for state-of-charge (SOC) estimation of lithium-ion batteries using Physics-informed LSTM.
   - Development of a Python tool for the automated generation of job application documents (cover letters, CVs, emails) with a PyQt6 GUI, multilingual support, and PDF preview.
-  - Development of the *Bonfire App* – AI-powered automation of job applications using LLMs.
+  - Development of the *Bonfire* software – AI-powered automation of job applications using LLMs.
 
 ---
 
@@ -38,7 +38,7 @@
 Through his master's thesis and internship at TLK-Thermo, Juan has in-depth knowledge of thermodynamic modeling of battery systems. He is proficient in creating electro-thermal equivalent circuit models (Thevenin, 2RC model), accounting for reversible and irreversible thermal behavior, and implementing derating strategies based on SOC and temperature. His work with Modelica and the TIL Battery library enables him to holistically simulate complex coupled systems of battery, cooling circuit, and power electronics.
 
 **2. Numerical Simulation and Optimization**
-His engineering background is characterized by intensive work with numerical methods. In his bachelor's thesis, he developed his own CFD solver for incompressible flows using high-order compact finite differences and ADI time-stepping. In his master's thesis, he applied this analytical strength to optimization: he formulated and solved an optimal control problem (OCP) using Direct Multiple Shooting with CasADi and IPOPT. This combination of physical modeling and mathematical optimization is one of his most outstanding competencies.
+His engineering background is characterized by intensive work with numerical methods. In his bachelor's thesis, he developed his own CFD solver for incompressible flows using high-order compact finite differences and ADI time-stepping. In his master's thesis, he applied this analytical strength to optimization: he formulated and solved an optimal control problem (OCP) using Direct Multiple Shooting with CasADi. This combination of physical modeling and mathematical optimization is one of his most outstanding competencies.
 
 **3. Python Software Development and Automation**
 During his internship at TLK-Thermo and in his own projects, Juan gained extensive experience in Python development. He developed backend software for data conversion between JSON and Python classes, implemented graphical user interfaces with PyQt6, and professionally documented projects with Sphinx. His ability to translate engineering problems into robust, maintainable software is also evident in his own tools such as the application generator and the battery digital twin application.

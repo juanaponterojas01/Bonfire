@@ -133,8 +133,8 @@ Prompts are loaded at runtime by the `render_prompt()` utility in `src/utils.py`
 In `src/llm_client.py`:
 
 ```python
-EXTRACTION_MODEL = "kimi-k2.5"          # For structured JSON extraction
-WRITER_MODEL = "deepseek-v4-flash"        # For creative writing
+EXTRACTION_MODEL = "deepseek-v4-flash"          # For structured JSON extraction
+WRITER_MODEL = "minimax-m2.7"        # For creative writing
 ```
 
 Swap these to any model available via your OpenCode API key. The extraction model should be good at following schemas; the writer model should be good at natural prose.

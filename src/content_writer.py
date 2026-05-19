@@ -93,8 +93,8 @@ def generate_cv_dynamic_zones(
     """Generate dynamic CV content zones tailored to a specific job.
 
     Produces the structured content that fills the dynamic sections of a
-    CV: a two-sentence professional summary, one sentence explaining the user's relevant
-    bachelor and master degrees subjects
+    CV: a three-sentence professional summary, one sentence explaining the user's relevant
+    bachelor subjects, and one sentence explaining the user's relevant master subjects.
 
     This function uses the structured-output LLM path
     (:func:`call_llm_parsed`) to obtain a validated
@@ -114,10 +114,6 @@ def generate_cv_dynamic_zones(
         RuntimeError: If the underlying LLM call fails.
     """
     text_language = _LANGUAGE_MAPPING[language]
-    system_prompt = render_prompt(
-        "cv_dynamic_zones",
-        text_language=text_language,
-    )
 
     # Slim profile with only fields relevant to CV dynamic zones
     relevant_profile = {
@@ -133,6 +129,15 @@ def generate_cv_dynamic_zones(
         ],
     }
     profile_json = json.dumps(relevant_profile, indent=2, ensure_ascii=False)
+
+    system_prompt = render_prompt(
+        "cv_dynamic_zones",
+        text_language=text_language,
+        job_title=job.title,
+        company=job.company,
+        required_topics=", ".join(job.required_topics),
+        profile_evidence=profile_json,
+    )
 
     user_prompt = (
         f"JOB TITLE: {job.title}\n"
@@ -164,8 +169,8 @@ def generate_email_yaml(
 
     Produces a concise, professional email including a YAML-style preamble
     (``subject:`` and ``to:`` fields), a greeting, a body paragraph, and a
-    farewell. The LLM detects the language from the job posting text and
-    writes the entire email in that language.
+    farewell. The email is written entirely in the language specified by
+    the *language* parameter.
 
     This function uses the raw-text LLM path (:func:`call_llm` with the
     :data:`WRITER_MODEL`) to produce free-form prose.
@@ -203,6 +208,8 @@ def generate_email_yaml(
         job_title=job.title,
         job_email=job.email,
         candidate_name=profile.personal_info.name,
+        company=job.company,
+        receiver_name=job.receiver_name,
     )
 
     user_prompt = (

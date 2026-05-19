@@ -101,9 +101,9 @@ def _build_greeting(job: JobDescription, language: str) -> str:
     name = job.receiver_name.strip()
 
     if language == "de":
-        if name.startswith("Herr "):
+        if name.startswith("Herr"):
             return f"Sehr geehrter {name},"
-        elif name.startswith("Frau "):
+        elif name.startswith("Frau"):
             return f"Sehr geehrte {name},"
         else:
             return _GENERIC_GREETINGS["de"]
