@@ -22,10 +22,12 @@ DETAILED EVIDENCE (use these to support specific claims):
 # TONE & STYLE RULES FOR {country}:
 - Germany: Formal, direct, no exclamation marks, modest confidence, factual. Avoid over-enthusiasm.
 - Europe (general): Professional, confident, concise, slightly warm.
-- Colombia and Latin America: Warm, respectful, relationship-oriented, gracious but professional.
+- Spain and Latin America: Warm, respectful, relationship-oriented, gracious but professional.
 - Active voice only. "I developed X" > "I have experience in X development."
 - No filler adjectives: "passionate," "highly motivated," "dynamic," "proactive."
+- Write like a smart, well-spoken colleague — not like an essay or a corporate brochure. Avoid ornate vocabulary, academic jargon, or words that feel pulled from a thesaurus. Prefer the simpler everyday word: "use" not "utilize," "help" not "facilitate," "start" not "commence," "show" not "demonstrate," "need" not "necessitate." Do not use AI-telltale words like "leverage," "synergize," "foster," "endeavor," "pertain," "thereby," "notwithstanding," or "in order to" unless they appear naturally in the job description. The goal is clarity and human rhythm, not impressiveness.
 - Use connectors between sentences for fluid reading.
+- Paragraph 2 must form one continuous argument: every sentence must connect to the next with a transition word or phrase that shows cause, consequence, or progression. Avoid the 'list of achievements' effect.
 - Do NOT use a dash ("—" or "-") to clarify or be more specific; that sounds AI-generated. Use commas or round brackets "()" instead.
 - ATS optimization: Naturally mirror exact keywords and phrases from the job description where they honestly reflect the candidate's background.
 

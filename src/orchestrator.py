@@ -11,6 +11,7 @@ from src.models import JobDescription, UserProfile
 from src.profile_extractor import extract_profile_from_md
 from src.job_evaluator import extract_job_description
 from src.content_writer import generate_cover_letter, generate_cv_dynamic_zones, generate_email_yaml
+from src.context_selector import select_relevant_details
 from src.docx_generator import render_cover_letter
 from src.pptx_generator import render_cv
 from src.utils import set_file_name
@@ -109,7 +110,12 @@ def run_job_pipeline(
             job = future_job.result()
             if source:
                 log_job_entry(job, source=source, state="pending")
-            relevant_details = future_summary.result()
+            raw_background_text = future_summary.result()
+            relevant_details = select_relevant_details(
+                job=job,
+                profile=profile,
+                background_text=raw_background_text,
+            )
 
         # Phase 2: Cover letter and CV zones run concurrently
         print("Generating cover letter, CV dynamic zones, and email...\n")

@@ -137,11 +137,11 @@ def main() -> None:
 
     if result["success"]:
         print("Application generated successfully!")
-        print(f"   Company: {result['company']}")
-        print(f"   Job: {result['job_title']}")
-        print(f"   Output: {result['output_dir']}")
+        print(f"   Company:      {result['company']}")
+        print(f"   Job:          {result['job_title']}")
+        print(f"   Output:       {result['output_dir']}")
         print(f"   Cover letter: {result['cover_letter']}")
-        print(f"   CV: {result['cv']}")
+        print(f"   CV:           {result['cv']}")
         sys.exit(0)
     else:
         print(f"Pipeline failed: {result['reason']}")

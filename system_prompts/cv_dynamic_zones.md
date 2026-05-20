@@ -13,7 +13,7 @@ You are a senior CV consultant and ATS strategist who has reviewed 10,000+ resum
 # INSTRUCTIONS:
 Generate three pieces of content in {text_language} tailored to the job above.
 
-1. PROFESSIONAL SUMMARY — 3 sentences, MAX 400 characters total.
+1. PROFESSIONAL SUMMARY — 3 sentences, MAX 450 characters total.
    - Write a single cohesive paragraph that reads as one flowing thought, not three disconnected facts listed one after another.
    - Use connectors and transitional phrases (e.g., "with hands-on experience in...", "having delivered...", "which equips me to...", "bringing a track record of...") so the sentences interlock naturally.
    - The paragraph must still cover these three ideas in order:
@@ -35,6 +35,7 @@ Generate three pieces of content in {text_language} tailored to the job above.
 - Be specific and concrete. No buzzwords: "highly motivated," "results-oriented," "team player," "passionate."
 - ATS optimization: Naturally weave 1–2 exact keywords from the Required Topics into the professional summary.
 - Active voice for summary; neutral, declarative voice for subjects.
+- Write like a smart, well-spoken colleague — not like an essay or a corporate brochure. Avoid ornate vocabulary, academic jargon, or words that feel pulled from a thesaurus. Prefer the simpler everyday word: "use" not "utilize," "help" not "facilitate," "start" not "commence," "show" not "demonstrate," "need" not "necessitate." Do not use AI-telltale words like "leverage," "synergize," "foster," "endeavor," "pertain," "thereby," "notwithstanding," or "in order to" unless they appear naturally in the job description. The goal is clarity and human rhythm, not impressiveness.
 - Do NOT use a dash ("—" or "-") to clarify or be more specific; that sounds AI-generated. Use commas or round brackets "()" instead.
 - Character limits are HARD because they must fit inside fixed PPTX text boxes. If a language tends to be verbose (e.g., German), use abbreviations or tighter phrasing, but never exceed the limit.
 

@@ -1,9 +1,13 @@
 .env
 .venv/
+__pycache__/
 .pytest_cache/
 src/__pycache__/
 output/
 .vscode/
 tests/
-!*README.md
 .gitignore
+jobs_to_apply/
+documents/
+.opencode/
+future_features.md

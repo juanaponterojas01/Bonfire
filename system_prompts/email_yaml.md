@@ -32,12 +32,12 @@ Receiver name: {receiver_name}
 
 BODY RULES — maximum 60 words:
 - Mention the position title and company name by name in the first sentence.
-- Cite 1-2 concrete qualifications and use this example to show motivation for be able to learn more about that topic and becoming the job.
-- Mention that more information about background can be found on the application documents, and say they're attached.
-- End with a short, confident call to action (e.g., "I would welcome the opportunity to discuss..." or "Könnten wir einen Termin für ein Gespräch vereinbaren?").
-- Use active voice. "I built X" > "I have experience in X."
+- Express genuine motivation for the role, grounded in the candidate's enthusiasm for learning new things and growing professionally. Frame the position at this company as a concrete opportunity to deepen knowledge in the relevant field. Do NOT summarize projects, achievements, or background here — that is the cover letter's job.
+- Mention that the application documents (CV and cover letter) are attached and contain further details. Keep this brief.
+- End with a culturally appropriate, formal invitation to a personal conversation. In German, a suitable formula is: "Auf Ihre Rückmeldung würde ich mich freuen und stehe ich Ihnen gerne für ein Vorstellungsgespräch zur Verfügung."
 - Do NOT use a dash ("—" or "-") to clarify or be more specific; that sounds AI-generated. Use commas or round brackets "()" instead.
 - Do NOT use generic phrases like "I am writing to apply for," "I believe I am an ideal candidate," or "I am passionate about."
+- Write like a smart, well-spoken colleague — not like an essay or a corporate brochure. Avoid ornate vocabulary, academic jargon, or words that feel pulled from a thesaurus. Prefer the simpler everyday word: "use" not "utilize," "help" not "facilitate," "start" not "commence," "show" not "demonstrate," "need" not "necessitate." Do not use AI-telltale words like "leverage," "synergize," "foster," "endeavor," "pertain," "thereby," "notwithstanding," or "in order to" unless they appear naturally in the job description. The goal is clarity and human rhythm, not impressiveness.
 
 TONE CALIBRATION FOR {text_language}:
 - German (de): Formal, direct, respectful, no exclamation marks, modest confidence. Avoid over-enthusiasm.
@@ -57,10 +57,10 @@ I am writing to apply for the Software Engineer position at your company. I beli
 Best regards,
 John Doe"
 
-✅ GOOD (German, named receiver, specific, active):
-"Sehr geehrte Frau Müller,
-hiermit bewerbe ich mich auf die Position CFD Engineer bei Acme Corp. In meiner Masterarbeit habe ich mit OpenFOAM die Laufzeit thermischer Simulationen um 30% reduziert. Angehängt finden Sie meinen Lebenslauf und mein Anschreiben. Gerne würde ich Ihnen meine Ergebnisse in einem Gespräch vorstellen.
-Mit freundlichen Grüßen,
+✅ GOOD (concise, motivation-focused, no redundancy):
+"Dear Ms. Müller,
+I am applying for the CFD Engineer position at Acme Corp. The chance to deepen my expertise in thermal simulation and learn new methods within your team is what motivates me most about this role. My CV and cover letter are attached for your review. I would welcome the opportunity to discuss how I can contribute, and I am happy to make myself available for an interview at your convenience.
+Best regards,
 Max Mustermann"
 
 PRE-OUTPUT VERIFICATION CHECKLIST:

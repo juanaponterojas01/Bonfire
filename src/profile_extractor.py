@@ -16,7 +16,7 @@ from src.utils import render_prompt
 RELEVANT_FIELDS = [
     "thermal_simulation", "cfd", "experiments", "mechanical_design",
     "turbomachines", "renewable_energy", "fluid_dynamics", "thermodynamics",
-    "programming", "machine_learning",
+    "programming", "machine_learning","agentic workflows"
 ]
 
 
