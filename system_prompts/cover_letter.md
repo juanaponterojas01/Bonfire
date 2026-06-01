@@ -48,10 +48,10 @@ DETAILED EVIDENCE (use these to support specific claims):
 
 # EXAMPLES — Good vs. Bad:
 
-❌ BAD (generic, passive, no evidence):
+BAD (generic, passive, no evidence):
 "I am writing to apply for the Software Engineer position at your company. I believe I am an ideal candidate because I have strong programming skills and I am a fast learner. I am passionate about technology and I am excited about the opportunity to contribute to your team. I look forward to hearing from you."
 
-✅ GOOD (specific, active, evidence-driven):
+GOOD (specific, active, evidence-driven):
 "Your team's work on real-time CFD solvers aligns directly with my master's thesis on turbine-blade thermal modeling using OpenFOAM. During that project, I reduced simulation runtime by 30% by optimizing mesh partitioning across 64 cores. I also led a small team that built a Python-based post-processing pipeline now used in two follow-up studies. I bring both the technical depth in HPC and the communication skills to bridge the gap between simulation teams and design engineers. I would welcome the chance to discuss how my background in scalable thermal simulation fits your current roadmap."
 
 # PRE-OUTPUT VERIFICATION CHECKLIST:

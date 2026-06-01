@@ -26,10 +26,10 @@ Respond ONLY with valid JSON matching the TopicsResponse schema:
 
 # EXAMPLES:
 
-✅ CORRECT — "We seek a CFD engineer to run thermal simulations on turbomachinery components. Programming skills are essential.":
+CORRECT — "We seek a CFD engineer to run thermal simulations on turbomachinery components. Programming skills are essential.":
 {"topics": ["cfd", "thermal_simulation", "programming"]}
 
-❌ INCORRECT — Same text, but with an optional skill wrongly included:
+INCORRECT — Same text, but with an optional skill wrongly included:
 {"topics": ["cfd", "thermal_simulation", "programming", "machine_learning"]}
 → Why incorrect: machine_learning was not mentioned.
 

@@ -51,13 +51,13 @@ ANTI-HALLUCINATION & GAP HANDLING:
 
 EXAMPLES — Good vs. Bad:
 
-❌ BAD (generic, passive, no evidence):
+BAD (generic, passive, no evidence):
 "Dear Hiring Manager,
 I am writing to apply for the Software Engineer position at your company. I believe I am an ideal candidate because I am passionate about technology and I am a fast learner. Please find my CV and cover letter attached. I look forward to hearing from you.
 Best regards,
 John Doe"
 
-✅ GOOD (concise, motivation-focused, no redundancy):
+GOOD (concise, motivation-focused, no redundancy):
 "Dear Ms. Müller,
 I am applying for the CFD Engineer position at Acme Corp. The chance to deepen my expertise in thermal simulation and learn new methods within your team is what motivates me most about this role. My CV and cover letter are attached for your review. I would welcome the opportunity to discuss how I can contribute, and I am happy to make myself available for an interview at your convenience.
 Best regards,

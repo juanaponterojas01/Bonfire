@@ -8,7 +8,7 @@ split across multiple XML `<a:r>` runs inside shapes and text frames.
 from pathlib import Path
 from pptx import Presentation
 
-from src.models import CVDynamicZones, JobDescription, UserProfile
+from src.models import CVDynamicZones
 
 
 def _replace_text_in_shape(shape, old_text: str, new_text: str) -> None:
@@ -48,19 +48,6 @@ def _replace_text_in_pptx(prs: Presentation, old_text: str, new_text: str) -> No
     for slide in prs.slides:
         for shape in slide.shapes:
             _replace_text_in_shape(shape, old_text, new_text)
-
-
-
-def _format_relevant_subjects(dynamic_zones: CVDynamicZones) -> str:
-    """Format relevant academic subjects as a bulleted list.
-
-    Args:
-        dynamic_zones: The AI-generated dynamic CV content.
-
-    Returns:
-        A string with each subject prefixed by a bullet point.
-    """
-    return "\n".join(f"• {subject}" for subject in dynamic_zones.relevant_subjects)
 
 
 def _build_cv_context(

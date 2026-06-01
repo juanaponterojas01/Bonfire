@@ -11,3 +11,7 @@ jobs_to_apply/
 documents/
 .opencode/
 future_features.md
+data/batch_state.json
+data/user_profile.json
+data/background_md/
+job_search.md

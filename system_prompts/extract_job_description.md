@@ -51,7 +51,7 @@ Extract a structured job description from the posting text below. Output valid J
 Posting text:
 "AeroTech GmbH is hiring a Senior CFD Engineer for our Munich office. You will run thermal simulations and fluid dynamics analyses on next-gen turbomachinery. Contact: Dr. Klaus Weber (k.weber@aerotech.de). Programming skills required. Machine learning knowledge is a plus."
 
-✅ CORRECT output:
+CORRECT output:
 {
   "title": "Senior CFD Engineer",
   "company": "AeroTech GmbH",

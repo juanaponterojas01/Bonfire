@@ -5,6 +5,7 @@ Usage examples::
     python main.py --file data/fake_job_german.txt --language de
     python main.py --job-text "We are hiring a CFD engineer..." --language en
     python main.py --url "https://example.com/careers/software-engineer" --language es
+    python main.py --batch batch_jobs.txt --language de
     python main.py --clean-output
 """
 
@@ -13,6 +14,7 @@ import shutil
 import sys
 from pathlib import Path
 
+from src import batch_mode
 from src.orchestrator import run_job_pipeline
 
 
@@ -61,6 +63,11 @@ def _build_argument_parser() -> argparse.ArgumentParser:
         type=str,
         help="URL of a job posting to fetch and scrape",
     )
+    input_group.add_argument(
+        "--batch",
+        type=str,
+        help="Path to a text file listing job sources (URLs or file paths, one per line)",
+    )
 
     parser.add_argument(
         "--language",
@@ -86,9 +93,9 @@ def main() -> None:
 
     # --- Handle --clean-output standalone flag ---
     if args.clean_output:
-        if args.url or args.file or args.job_text:
+        if args.batch or args.url or args.file or args.job_text:
             print(
-                "Error: --clean-output cannot be combined with --url, "
+                "Error: --clean-output cannot be combined with --batch, --url, "
                 "--file, or --job-text.",
                 file=sys.stderr,
             )
@@ -103,14 +110,118 @@ def main() -> None:
         sys.exit(0)
 
     # --- Require exactly one input source when not using --clean-output ---
-    if not args.url and not args.file and not args.job_text:
+    if not args.batch and not args.url and not args.file and not args.job_text:
         print(
-            "Error: one of --url, --file, or --job-text is required "
+            "Error: one of --batch, --url, --file, or --job-text is required "
             "(or use --clean-output alone).",
             file=sys.stderr,
         )
         sys.exit(1)
 
+    # --- Batch mode ---
+    if args.batch:
+        try:
+            sources = batch_mode.parse_batch_list(args.batch)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        from src.orchestrator import _load_or_extract_profile
+        from src.job_scraper import fetch_job_text
+        profile = _load_or_extract_profile()
+
+        total = len(sources)
+        success = 0
+        failed = 0
+        skipped = 0
+
+        try:
+            for i, source in enumerate(sources, start=1):
+                print(f"\n=== [{i}/{total}] Processing: {source} ===")
+
+                # Resume check
+                try:
+                    if batch_mode.is_already_processed(source):
+                        print("Skipping (already processed).")
+                        skipped += 1
+                        continue
+                except Exception as state_err:
+                    print(
+                        f"Warning: could not read batch state for {source}: {state_err}",
+                        file=sys.stderr,
+                    )
+
+                # Fetch job_text
+                try:
+                    if source.startswith(("http://", "https://")):
+                        job_text = fetch_job_text(source)
+                    else:
+                        job_text = Path(source).read_text(encoding="utf-8")
+                except Exception as e:
+                    print(f"Error fetching job text: {e}", file=sys.stderr)
+                    try:
+                        batch_mode.mark_job(source, "failed")
+                    except Exception as mark_err:
+                        print(
+                            f"Warning: could not save state for {source}: {mark_err}",
+                            file=sys.stderr,
+                        )
+                    failed += 1
+                    continue
+
+                # Run pipeline
+                try:
+                    result = run_job_pipeline(job_text, args.language, source=source, profile=profile)
+                except Exception as e:
+                    print(f"Pipeline error: {e}", file=sys.stderr)
+                    try:
+                        batch_mode.mark_job(source, "failed")
+                    except Exception as mark_err:
+                        print(
+                            f"Warning: could not save state for {source}: {mark_err}",
+                            file=sys.stderr,
+                        )
+                    failed += 1
+                    continue
+
+                if result["success"]:
+                    print("Application generated successfully!")
+                    print(f"   Company:      {result['company']}")
+                    print(f"   Job:          {result['job_title']}")
+                    print(f"   Output:       {result['output_dir']}")
+                    try:
+                        batch_mode.mark_job(source, "success", result["output_dir"])
+                    except Exception as mark_err:
+                        print(
+                            f"Warning: could not save state for {source}: {mark_err}",
+                            file=sys.stderr,
+                        )
+                    success += 1
+                else:
+                    print(f"Pipeline failed: {result['reason']}")
+                    try:
+                        batch_mode.mark_job(source, "failed")
+                    except Exception as mark_err:
+                        print(
+                            f"Warning: could not save state for {source}: {mark_err}",
+                            file=sys.stderr,
+                        )
+                    failed += 1
+        except (KeyboardInterrupt, SystemExit):
+            raise
+
+        # Print final summary
+        print("\n" + "=" * 40)
+        print("BATCH SUMMARY")
+        print("=" * 40)
+        print(f"Total:   {total}")
+        print(f"Success: {success}")
+        print(f"Failed:  {failed}")
+        print(f"Skipped: {skipped}")
+        print("=" * 40)
+        sys.exit(0 if failed == 0 else 1)
+
+    # --- Single-job mode ---
     if args.url:
         try:
             from src.job_scraper import fetch_job_text

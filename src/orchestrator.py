@@ -4,6 +4,8 @@ This module provides the main workflow engine. Given a job description and a
 language, it loads the user profile, evaluates the job match, generates
 tailored content, and renders the final application documents.
 """
+import re
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -26,6 +28,20 @@ _LANGUAGE_SUMMARY = {
     "en": "background_english.md",
     "es": "background_español.md",
 }
+
+
+def _sanitize_company_name(name: str) -> str:
+    """Sanitize a company name for use in a filesystem path.
+
+    Replaces spaces with underscores and strips characters that are
+    invalid or unsafe on common filesystems. Falls back to
+    ``"unknown_company"`` if the result would otherwise be empty.
+    """
+    sanitized = name.replace(" ", "_")
+    # Remove characters invalid on Windows and Unix
+    sanitized = re.sub(r'[\\/:*?"<>|]', "", sanitized)
+    sanitized = sanitized.strip("_-")
+    return sanitized if sanitized else "unknown_company"
 
 
 def _load_or_extract_profile() -> UserProfile:
@@ -79,12 +95,13 @@ def run_job_pipeline(
     job_text: str,
     language: str,
     source: str = "",
+    profile: UserProfile | None = None,
 ) -> dict:
     """Execute job application steps pipeline.
 
-    Loads or extracts the user profile, parses the job description,
-    generates tailored cover letter, CV content, and application email,
-    then renders the final documents.
+    Loads or extracts the user profile (if not provided), parses the job
+    description, generates tailored cover letter, CV content, and
+    application email, then renders the final documents.
 
     Args:
         job_text: The raw text of the job posting.
@@ -93,6 +110,9 @@ def run_job_pipeline(
                   Defaults to ``""``. When non-empty, the job is
                   automatically logged to ``data/job-history.csv``
                   with state ``"pending"``.
+        profile:  An optional pre-loaded :class:`UserProfile`. If ``None``,
+                  the profile is loaded from disk (``data/user_profile.json``
+                  or extracted from Markdown files).
 
     Returns:
         A dictionary with ``"success": True`` and output file paths
@@ -102,11 +122,13 @@ def run_job_pipeline(
     try:
         print("loading and parsing job description, and reading background...\n")
         with ThreadPoolExecutor(max_workers=3) as executor:
-            future_profile = executor.submit(_load_or_extract_profile)
+            if profile is None:
+                future_profile = executor.submit(_load_or_extract_profile)
             future_job = executor.submit(_parse_job_description, job_text)
             future_summary = executor.submit(_load_summary, language)
 
-            profile = future_profile.result()
+            if profile is None:
+                profile = future_profile.result()
             job = future_job.result()
             if source:
                 log_job_entry(job, source=source, state="pending")
@@ -134,7 +156,9 @@ def run_job_pipeline(
             dynamic_zones = future_cv.result()
             email_yaml_content = future_email.result()
 
-        output_dir = Path("output") / job.company
+        timestamp = int(time.time() * 1_000_000)
+        sanitized_company = _sanitize_company_name(job.company)
+        output_dir = Path("output") / f"{sanitized_company}_{timestamp}"
         output_dir.mkdir(parents=True, exist_ok=True)
 
         print("Creating email...\n")

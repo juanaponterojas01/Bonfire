@@ -56,7 +56,7 @@ Document excerpt:
 "### FILE: background_deutsch.md
 Juan Aponte — M.Sc. Mechanical Engineering, TU Braunschweig (2024). Thesis: Optimal Control of a Charging Process for a Battery System. Subjects: Thermodynamics, Fluid Mechanics, Control Systems. Internship at TLK-Thermo (Oct 2023 – Jan 2024): Developed Python backend software for data editing. Tools: Python, Qt, Sphinx."
 
-✅ CORRECT extraction (excerpt):
+CORRECT extraction (excerpt):
 {
   "personal_info": {
     "name": "Juan Aponte",

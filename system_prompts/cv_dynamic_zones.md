@@ -47,22 +47,22 @@ Generate three pieces of content in {text_language} tailored to the job above.
 
 # EXAMPLES — Good vs. Bad:
 
-❌ BAD (generic, buzzword-heavy, exceeds limits):
+BAD (generic, buzzword-heavy, exceeds limits):
 "I am a highly motivated and results-oriented mechanical engineer with a passion for innovation and a proven track record of excellence in dynamic team environments. I have experience in many areas including simulation, design, and project management."
 
-✅ GOOD (specific, evidence-driven, within limits):
+GOOD (specific, evidence-driven, within limits):
 "I am a mechanical engineer with 4 years of CFD experience. I optimized a turbine cooling simulation, cutting runtime by 30%. I bridge HPC and design teams."
 
-❌ BAD (invented subjects, neutral form violated):
+BAD (invented subjects, neutral form violated):
 "I deepened my knowledge in quantum computing and blockchain during my bachelor's."
 
-✅ GOOD (neutral, factual, from real profile):
+GOOD (neutral, factual, from real profile):
 "Solid foundation in fluid mechanics, thermodynamics, and materials science."
 
-❌ BAD (3 disconnected facts, no flow — sounds AI-generated):
+BAD (3 disconnected facts, no flow — sounds AI-generated):
 "I am a mechanical engineer with 4 years of CFD experience. I optimized a turbine cooling simulation, cutting runtime by 30%. I bridge HPC and design teams."
 
-✅ GOOD (cohesive paragraph with connectors):
+GOOD (cohesive paragraph with connectors):
 "I am a mechanical engineer with 4 years of hands-on CFD experience, having optimized a turbine cooling simulation that cut runtime by 30%. This background equips me to bridge the gap between HPC and design teams, ensuring simulation insights translate directly into engineering decisions."
 
 # OUTPUT FORMAT:
@@ -75,7 +75,7 @@ Respond ONLY with valid JSON matching this exact schema:
 
 # PRE-OUTPUT VERIFICATION CHECKLIST:
 Before returning the JSON, verify:
-1. Character counts: professional_summary ≤ 362, bachelor_subjects ≤ 140, master_subjects ≤ 140.
+1. Character counts: professional_summary ≤ 450, bachelor_subjects ≤ 140, master_subjects ≤ 140.
 2. Summary uses first person singular; subjects use neutral form.
 3. No invented facts, degrees, projects, or technologies.
 4. At least one keyword from Required Topics appears naturally in the professional summary.
