@@ -16,7 +16,7 @@ from pathlib import Path
 from docx import Document
 from docx.text.paragraph import Paragraph
 
-from src.models import JobDescription
+from src.models import JobDescription, UserProfile
 from src.utils import get_todays_date
 
 
@@ -124,18 +124,19 @@ def _build_cover_letter_context(
     job: JobDescription,
     letter_body: str,
     language: str,
+    profile: UserProfile,
 ) -> dict[str, str]:
     """Build a context dictionary mapping template placeholders to values.
 
-    Combines data from the job description and generated
-    letter body into a flat dictionary whose keys match the ``[placeholder]``
-    strings used in the DOCX template. The dictionary includes date, company,
-    location, greeting, and letter body.
+    Combines data from the job description, generated
+    letter body, and user profile into a flat dictionary whose keys
+    match the ``[placeholder]`` strings used in the DOCX template.
 
     Args:
         job: The job description containing company, location, etc.
         letter_body: The AI-generated cover letter body text.
         language: Language code used for date formatting (``"en"``, ``"de"``, ``"es"``).
+        profile: The user profile containing personal contact details.
 
     Returns:
         A dictionary mapping ``[placeholder]`` keys to their replacement values.
@@ -146,6 +147,11 @@ def _build_cover_letter_context(
         "[location]": job.location,
         "[greeting]": _build_greeting(job, language),
         "[letter_body]": letter_body,
+        "[candidate_name]": profile.personal_info.name,
+        "[candidate_address]": profile.personal_info.address,
+        "[candidate_email]": profile.personal_info.email,
+        "[candidate_phone]": profile.personal_info.phone,
+        "[candidate_linkedin]": profile.personal_info.linkedin or "",
     }
 
 
@@ -155,6 +161,7 @@ def render_cover_letter(
     job: JobDescription,
     letter_body: str,
     language: str,
+    profile: UserProfile,
 ) -> str:
     """Render a cover letter from a DOCX template by replacing placeholders.
 
@@ -168,6 +175,7 @@ def render_cover_letter(
         job: The job description to pull company and location data from.
         letter_body: The AI-generated cover letter body text.
         language: Language code for date formatting (``"en"``, ``"de"``, ``"es"``).
+        profile: The user profile containing personal contact details.
 
     Returns:
         The ``output_path`` string where the document was saved.
@@ -180,7 +188,7 @@ def render_cover_letter(
     """
     doc = Document(str(template_path))
 
-    context = _build_cover_letter_context(job, letter_body, language)
+    context = _build_cover_letter_context(job, letter_body, language, profile)
 
     for placeholder, value in context.items():
         _replace_text_in_docx(doc, placeholder, value)

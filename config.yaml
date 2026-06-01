@@ -1,0 +1,12 @@
+api:
+  base_url: "https://opencode.ai/zen/go/v1"
+  api_key_env: "OPENCODE_API_KEY"
+
+models:
+  extraction_model: "deepseek-v4-flash"
+  writer_model: "minimax-m2.7"
+
+settings:
+  temperature_extraction: 0.2
+  temperature_writing: 0.5
+  timeout: 180.0

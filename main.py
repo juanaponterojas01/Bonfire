@@ -2,7 +2,7 @@
 
 Usage examples::
 
-    python main.py --file data/fake_job_german.txt --language de
+    python main.py --file examples/jobs/fake_job_german.txt --language de
     python main.py --job-text "We are hiring a CFD engineer..." --language en
     python main.py --url "https://example.com/careers/software-engineer" --language es
     python main.py --batch batch_jobs.txt --language de

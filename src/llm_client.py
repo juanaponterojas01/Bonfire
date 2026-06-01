@@ -8,10 +8,7 @@ from dotenv import load_dotenv
 from litellm import completion
 from pydantic import BaseModel, ValidationError
 
-OPENCODE_BASE_URL = "https://opencode.ai/zen/go/v1"
-
-EXTRACTION_MODEL = "deepseek-v4-flash"  # For extraction, logic, JSON
-WRITER_MODEL = "minimax-m2.7"           # For writing, creative content
+from src.config import CONFIG
 
 
 def strip_json_fences(text: str) -> str:
@@ -67,10 +64,10 @@ def call_llm_parsed(
     system_prompt: str,
     user_prompt: str,
     response_model: type[BaseModel],
-    model: str = EXTRACTION_MODEL,
+    model: str = CONFIG.models.extraction_model,
     temperature: float = 0.2,
     max_retries: int = 1,
-    timeout: float = 180.0,
+    timeout: float = CONFIG.settings.timeout,
 ) -> BaseModel:
     """Call an LLM and return a validated Pydantic model instance.
 
@@ -144,10 +141,10 @@ def _append_schema_instruction(system_prompt: str, response_model: type[BaseMode
 def call_llm(
     system_prompt: str,
     user_prompt: str,
-    model: str = EXTRACTION_MODEL,
+    model: str = CONFIG.models.extraction_model,
     temperature: float = 0.2,
     response_model: type[BaseModel] | None = None,
-    timeout: float = 120.0,
+    timeout: float = CONFIG.settings.timeout,
 ) -> str:
     """Call an LLM via litellm through the OpenCode proxy.
 
@@ -186,7 +183,7 @@ def call_llm(
                 {"role": "user", "content": user_prompt},
             ],
             temperature=temperature,
-            api_base=OPENCODE_BASE_URL,
+            api_base=CONFIG.api.base_url,
             api_key=opencode_api_key,
             timeout=timeout,
         )

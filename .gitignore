@@ -1,12 +1,13 @@
 .env
 .venv/
 __pycache__/
+*.pyc
 .pytest_cache/
 src/__pycache__/
 output/
 .vscode/
-tests/
-.gitignore
+.DS_Store
+Thumbs.db
 jobs_to_apply/
 documents/
 .opencode/
@@ -14,4 +15,5 @@ future_features.md
 data/batch_state.json
 data/user_profile.json
 data/background_md/
+templates/
 job_search.md

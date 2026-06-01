@@ -8,7 +8,8 @@ must conform to the :class:`CVDynamicZones` schema.
 
 import json
 
-from src.llm_client import call_llm, call_llm_parsed, EXTRACTION_MODEL, WRITER_MODEL
+from src.llm_client import call_llm, call_llm_parsed
+from src.config import CONFIG
 from src.models import CVDynamicZones, JobDescription, UserProfile
 from src.utils import render_prompt
 
@@ -80,8 +81,8 @@ def generate_cover_letter(
     return call_llm(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
-        model=WRITER_MODEL,
-        temperature=0.5,
+        model=CONFIG.models.writer_model,
+        temperature=CONFIG.settings.temperature_writing,
     )
 
 
@@ -154,9 +155,9 @@ def generate_cv_dynamic_zones(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         response_model=CVDynamicZones,
-        model=EXTRACTION_MODEL,
-        temperature=0.2,
-        timeout=180.0,
+        model=CONFIG.models.extraction_model,
+        temperature=CONFIG.settings.temperature_extraction,
+        timeout=CONFIG.settings.timeout,
     )
 
 
@@ -220,6 +221,6 @@ def generate_email_yaml(
     return call_llm(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
-        model=WRITER_MODEL,
-        temperature=0.5,
+        model=CONFIG.models.writer_model,
+        temperature=CONFIG.settings.temperature_writing,
     )

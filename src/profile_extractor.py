@@ -10,7 +10,8 @@ import json
 from pathlib import Path
 
 from src.models import UserProfile
-from src.llm_client import call_llm_parsed, EXTRACTION_MODEL
+from src.llm_client import call_llm_parsed
+from src.config import CONFIG
 from src.utils import render_prompt
 
 RELEVANT_FIELDS = [
@@ -94,7 +95,7 @@ def extract_profile_from_md(md_directory: str, output_json_path: str) -> UserPro
             relevant_fields=RELEVANT_FIELDS,
         ),
         user_prompt=user_prompt,
-        model=EXTRACTION_MODEL,
+        model=CONFIG.models.extraction_model,
         temperature=0.2,
         response_model=UserProfile,
     )

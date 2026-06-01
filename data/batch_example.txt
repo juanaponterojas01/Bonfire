@@ -1,0 +1,8 @@
+# Example batch file for Bonfire
+# One job source per line (URL or file path)
+# Lines starting with # are ignored
+# Maximum 15 jobs per batch
+
+examples/jobs/fake_job_english.txt
+examples/jobs/fake_job_german.txt
+# https://example.com/careers/software-engineer

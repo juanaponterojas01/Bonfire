@@ -12,7 +12,8 @@ of domain tags.
 
 from pydantic import BaseModel
 
-from src.llm_client import call_llm_parsed, EXTRACTION_MODEL
+from src.llm_client import call_llm_parsed
+from src.config import CONFIG
 from src.models import JobDescription, JobMatchResult, UserProfile
 from src.profile_extractor import RELEVANT_FIELDS
 from src.utils import render_prompt
@@ -51,7 +52,7 @@ def extract_job_topics(raw_text: str) -> list[str]:
         system_prompt=system_prompt,
         user_prompt=raw_text,
         response_model=TopicsResponse,
-        model=EXTRACTION_MODEL,
+        model=CONFIG.models.extraction_model,
         temperature=0.1,
     )
 
@@ -81,7 +82,7 @@ def extract_job_description(raw_text: str) -> JobDescription:
         system_prompt=system_prompt,
         user_prompt=raw_text,
         response_model=JobDescription,
-        model=EXTRACTION_MODEL,
+        model=CONFIG.models.extraction_model,
         temperature=0.1,
     )
 
@@ -118,7 +119,7 @@ def evaluate_job_match(job: JobDescription, profile: UserProfile) -> JobMatchRes
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         response_model=JobMatchResult,
-        model=EXTRACTION_MODEL,
+        model=CONFIG.models.extraction_model,
         temperature=0.2,
     )
 

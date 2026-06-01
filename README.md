@@ -1,8 +1,15 @@
 # Bonfire — AI-Powered Job Application Generator
 
-**Bonfire** is an LLM-driven pipeline that automatically generates tailored cover letters and CVs from a single job posting. It takes raw job advertisement text, extracts structured information, writes personalized application documents, and renders them into professional DOCX and PPTX templates — all from the command line.
+**Version:** 0.1.0
+
+**Bonfire** is an LLM-driven pipeline that automatically generates tailored cover letters and CVs from a single job posting. It takes job advertisement text, extracts structured information, writes personalized application documents, and renders them into professional DOCX and PPTX templates — all from the command line.
 
 Built for job seekers, automation enthusiasts, and AI agents, Bonfire handles the repetitive parts of job applications so you can focus on what matters.
+
+This program allows the creation of personalized application documents based on the user's own background and style for cover letters and resumes, so the generated documents don't seem generic.
+
+* User background can be provided via text files like `.md`. It is possible to extract this information from degree certificates and PDFs using Python libraries like `pypdf` or tools like PDF OCR. Most current AI assistants are able to do this.
+* Your own document style can be defined by creating templates as `.docx` and `.pptx` files.
 
 ---
 
@@ -16,6 +23,7 @@ Built for job seekers, automation enthusiasts, and AI agents, Bonfire handles th
 - **🧩 Structured Profile Extraction** — Reads your background from Markdown files and extracts a validated Pydantic `UserProfile` with skills, education, experience, and projects.
 - **⚙️ Automation-Ready** — Designed to be invoked by AI agents (like OpenClaw) to fully automate the job search → application pipeline.
 - **🔑 Minimal Setup** — Single environment variable (`OPENCODE_API_KEY`), simple CLI, no databases or web servers.
+- **📦 Batch Processing** — Process multiple job postings in a single run with automatic state tracking and resume capability.
 
 ---
 
@@ -26,32 +34,32 @@ Bonfire is organized as a sequential pipeline, with each step handled by a dedic
 ```
 Job Posting (raw text)
        │
-       ▼
+       V
 ┌────────────────────┐     ┌───────────────────────┐
-│  profile_extractor │ ───▶  user_profile.json    │
+│  profile_extractor │ ───>|  user_profile.json    │
 │  (MD → structured) │     │  (cached Pydantic)    │
 └────────────────────┘     └───────────────────────┘
        │
-       ▼        ┌───────────────────┐
-       ├───────▶│  job_evaluator    │───▶ JobDescription (title, company,
+       V        ┌───────────────────┐
+       ├───────>│  job_evaluator    │───> JobDescription (title, company,
        │        │  (LLM extraction) │     location, topics, receiver)
        │        └───────────────────┘
        │
        │        ┌───────────────────┐
-       └───────▶│  content_writer   │───▶ Cover letter body (free text)
-                │  (LLM generation) │───▶ CVDynamicZones (structured JSON)
-                │                   │───▶ email.yaml (inline format)
+       └───────>│  content_writer   │───> Cover letter body (free text)
+                │  (LLM generation) │───> CVDynamicZones (structured JSON)
+                │                   │───> email.yaml (inline format)
                 └───────────────────┘
                        │
-                       ▼
+                       V
        ┌───────────────────┐    ┌───────────────────────┐
-       │  docx_generator   │───▶ cover_letter.docx     │
+       │  docx_generator   │───>|  cover_letter.docx    │
        │  (template fill)  │    └───────────────────────┘
        └───────────────────┘
               │
-              ▼
+              V
        ┌──────────────────┐    ┌───────────────────────┐
-       │  pptx_generator  │───▶ cv.pptx               │
+       │  pptx_generator  │───>|  cv.pptx              │
        │  (template fill) │    └───────────────────────┘
        └──────────────────┘
 ```
@@ -71,6 +79,8 @@ Job Posting (raw text)
 | `src/llm_client.py` | Lightweight LLM client wrapping `litellm` with two-model support and JSON parsing |
 | `src/models.py` | Pydantic models: `UserProfile`, `JobDescription`, `CVDynamicZones`, `PersonalInfo`, etc. |
 | `src/utils.py` | Date formatting, localized filename generation, `render_prompt()` template loader |
+| `src/batch_mode.py` | Batch list parsing, state tracking, and summary for multi-job runs |
+| `src/config.py` | Loads runtime settings from `config.yaml` (model names, temperature, API config) |
 
 ### Data Models
 
@@ -105,11 +115,11 @@ Create your own cover letter and CV templates using any word processor or presen
 | `[bachelor_subjects]` | AI-generated bachelor's subjects text |
 | `[master_subjects]` | AI-generated master's subjects text |
 
-Place your templates in `templates/{lang}/` where `{lang}` is `en`, `de`, or `es`.
+Place your templates in `templates/{lang}/` where `{lang}` is a supported language code: `en` (English), `de` (German), or `es` (Spanish).
 
 ### 2. System Prompts
 
-Every LLM system prompt now lives in `system_prompts/` as a standalone Markdown file. You can edit any prompt to change the writing style, tone, structure, or extraction behavior — no Python code changes required.
+Every LLM system prompt lives in `system_prompts/` as a standalone Markdown file. You can edit any prompt to change the writing style, tone, structure, or extraction behavior — no Python code changes required.
 
 Prompts are loaded at runtime by the `render_prompt()` utility in `src/utils.py`, which:
 - Reads the `.md` file from `system_prompts/<template_name>.md`
@@ -130,18 +140,41 @@ Prompts are loaded at runtime by the `render_prompt()` utility in `src/utils.py`
 
 ### 3. LLM Models
 
-In `src/llm_client.py`:
+Model selection is configured in `config.yaml` at the project root:
 
-```python
-EXTRACTION_MODEL = "deepseek-v4-flash"          # For structured JSON extraction
-WRITER_MODEL = "minimax-m2.7"        # For creative writing
+```yaml
+models:
+  extraction_model: "deepseek-v4-flash"   # For structured JSON extraction
+  writer_model: "minimax-m2.7"            # For creative writing
 ```
 
-Swap these to any model available via your OpenCode API key. The extraction model should be good at following schemas; the writer model should be good at natural prose.
+Edit `config.yaml` to switch to any model available via your LLM provider API key (for instance OpenCode), based on the OpenAI API call structure. The extraction model should be good at following schemas; the writer model should be good at natural prose and also at multilingual tasks if you want to create applications in other languages. It is also strongly recommended to use fast models, so the timeout limit of the API call is harder to hit and because it allows faster automation when batch mode is being used to create multiple job applications.
+
+You can also adjust the generation temperature for each model:
+
+```yaml
+settings:
+  temperature_extraction: 0.2    # Lower = more deterministic JSON output
+  temperature_writing: 0.5       # Higher = more creative prose
+  timeout: 120.0                 # LLM request timeout in seconds
+```
 
 ### 4. Background Data
 
 Your professional background is stored in `data/background_md/`. Create one Markdown file per section (education, experience, projects, skills) and the LLM will extract a structured profile from them. The extracted profile is cached in `data/user_profile.json`.
+
+---
+
+## First Run / Examples
+
+The project ships with ready-to-use example data so you can test the pipeline immediately without any setup beyond your API key.
+
+- **`examples/`** — Contains fictional applicant profiles and generic DOCX/PPTX templates for all three supported languages.
+  - `examples/data/background_md/` — Dummy background files for **John Smith** (EN), **Johannes Schmidt** (DE), and **Juan Pérez** (ES).
+  - `examples/templates/` — Generic cover letter and CV templates with all the required `[placeholder]` strings.
+- **`templates/`** and **`data/background_md/`** — These directories are for **your** real templates and background files. They are ignored by git (see `.gitignore`).
+
+**Automatic fallback:** If you haven't added your own templates or background yet, Bonfire uses the examples automatically. The pipeline first looks in `templates/{lang}/` and `data/background_md/`; if those directories are empty, it falls back to `examples/templates/{lang}/` and `examples/data/background_md/`. This means you can run the very first test without any manual file copying.
 
 ---
 
@@ -150,7 +183,7 @@ Your professional background is stored in `data/background_md/`. Create one Mark
 ### Prerequisites
 
 - Python **3.11 or higher**
-- An [OpenCode](https://opencode.ai) API key
+- An LLM-provider API key
 
 ### Setup
 
@@ -167,14 +200,34 @@ source .venv/bin/activate   # Linux/macOS
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Set your OpenCode API key
-# Either create a .env file:
-echo "OPENCODE_API_KEY=sk-..." > .env
+# 4. Create your .env file from the example template
+cp examples/.env.example .env
 
-# Or set an environment variable:
+# 5. Edit .env and add your OpenCode API key
+#    OPENCODE_API_KEY=sk-...
+
+# Alternatively, set the environment variable directly:
 # export OPENCODE_API_KEY=sk-...   # Linux/macOS
 # set OPENCODE_API_KEY=sk-...      # Windows
 ```
+
+### Quick Start
+
+Once setup is complete, you can immediately test the pipeline using the included example data:
+
+```bash
+python main.py --file examples/jobs/fake_job_english.txt --language en
+```
+
+This will:
+1. Load the dummy profile for **John Smith** from the example background files (automatic fallback).
+2. Parse the fake English job posting for a "Senior CFD Engineer" position.
+3. Generate a tailored cover letter and CV.
+4. Save the output to `output/` using the generic example templates.
+
+> **Note:** The example templates and dummy backgrounds are intentionally generic. After verifying the pipeline works, replace them with your own:
+> - Add your real background Markdown files to `data/background_md/`.
+> - Copy the example templates from `examples/templates/{lang}/` to `templates/{lang}/` and customize them with your branding.
 
 ### Dependencies
 
@@ -196,13 +249,13 @@ echo "OPENCODE_API_KEY=sk-..." > .env
 
 ```bash
 # From a job posting file (German)
-python main.py --job-file data/fake_job_german.txt --language de
+python main.py --file examples/jobs/fake_job_german.txt --language de
 
 # From raw job text (English)
 python main.py --job-text "We are hiring a Senior CFD Engineer..." --language en
 
 # From a job posting file (Spanish)
-python main.py --job-file data/fake_job_spanish.txt --language es
+python main.py --file examples/jobs/fake_job_spanish.txt --language es
 
 # From a URL
 python main.py --url "https://example.com/careers/software-engineer" --language en
@@ -211,24 +264,54 @@ python main.py --url "https://example.com/careers/software-engineer" --language 
 python main.py --clean-output
 ```
 
+### Batch Mode
+
+Process multiple job postings in a single run with automatic state tracking:
+
+```bash
+python main.py --batch data/batch_example.txt --language en
+```
+
+**Batch file format** — A plain text file with one job source per line. Each line can be a local file path or a URL. Lines starting with `#` are ignored. Maximum 15 jobs per batch.
+
+```
+# Example batch file
+examples/jobs/fake_job_english.txt
+examples/jobs/fake_job_german.txt
+https://example.com/careers/software-engineer
+```
+
+**State tracking** — Bonfire maintains a persistent state file at `data/batch_state.json` that records the status of every job processed (`success` or `failed`) along with the output directory. If the batch run is interrupted (e.g., a network timeout or rate limit), re-running the same command will **skip** previously successful jobs and **retry** only the failed or unfinished ones.
+
+**Summary output** — After processing all jobs, Bonfire prints a summary:
+
+```
+Batch complete — 3 succeeded, 1 failed, 0 skipped
+```
+
+This makes batch mode ideal for automation: run a batch list, check the summary, and handle any failures programmatically.
+
+> **Note:** `--batch` is mutually exclusive with `--file`, `--job-text`, and `--url`. Use `--clean-output` independently to reset all output folders.
+
 ### CLI Arguments
 
 | Argument | Description |
 |---|---|
-| `--job-file` | Path to a file containing the raw job posting text |
+| `--file` | Path to a file containing the raw job posting text |
 | `--job-text` | Raw job posting text passed directly on the command line |
 | `--url` | URL of a job posting to fetch and scrape |
+| `--batch` | Path to a text file listing job sources (URLs or file paths, one per line) |
 | `--language` | Output language: `en` (English), `de` (German), or `es` (Spanish). Default: `de` |
 | `--clean-output` | Remove all generated output folders and exit |
 
-> **Note:** `--job-file`, `--job-text`, and `--url` are mutually exclusive — you must provide exactly one (or use `--clean-output` alone).
+> **Note:** `--file`, `--job-text`, `--url`, and `--batch` are mutually exclusive — you must provide exactly one (or use `--clean-output` alone).
 
 ### What Happens
 
 The pipeline runs in two parallelized phases to minimize wall-clock time:
 
 **Phase 1 (parallel)** — All three I/O steps kick off simultaneously:
-1. **Profile Loading** — Loads `data/user_profile.json` if it exists, otherwise extracts it from `data/background_md/*.md` files.
+1. **Profile Loading** — Loads `data/user_profile.json` if it exists, otherwise extracts it from `data/background_md/*.md` files (with automatic fallback to `examples/data/background_md/`).
 2. **Job Parsing** — Sends the job posting to the LLM to extract title, company, location, required topics, and contact person with gender detection.
 3. **Background Reading** — Loads the language-specific background summary.
 
@@ -240,9 +323,11 @@ The pipeline runs in two parallelized phases to minimize wall-clock time:
 **Phase 3 (sequential)** — Fast, local processing:
 7. **File Writing** — Saves the generated email to `email.yaml`, fills the DOCX and PPTX templates with all generated content, and writes the final files.
 
-> **URL Scraping Limitations:** Bonfire fetches job pages via [Jina AI Reader](https://r.jina.ai/), which handles JavaScript-rendered content better than a plain HTTP request. However, some sites (e.g., LinkedIn, Indeed) block external readers or require authentication. When a URL fails because it is blocked or returns no usable text, it is automatically logged to `data/blacklist.txt` so you can avoid those sites in the future. If `--url` fails, save the text manually and use `--job-file` or `--job-text` instead.
+> **URL Scraping Limitations:** Bonfire fetches job pages via [Jina AI Reader](https://r.jina.ai/), which handles JavaScript-rendered content better than a plain HTTP request. However, some sites (e.g., LinkedIn, Indeed) block external readers or require authentication. When a URL fails because it is blocked or returns no usable text, it is automatically logged to `data/blacklist.txt` so you can avoid those sites in the future. If `--url` fails, save the text manually and use `--file` or `--job-text` instead.
 >
 > **Job History Logging:** Every job processed by the pipeline is automatically recorded in `data/job-history.csv` with an initial state of `pending`. This history tracks each application by company, title, location, contact email, and source URL. A future automation feature will allow updating the state to `sent` once an application has been submitted, enabling a fully automated job-search workflow.
+>
+> **Batch Mode State Tracking:** When using `--batch`, Bonfire maintains `data/batch_state.json` to track per-job status. This enables resume capability — re-running the same batch file will skip already-successful jobs and retry only failed or unfinished ones. The state file is JSON-formatted and can be inspected or reset manually.
 
 ### Output
 
@@ -264,18 +349,20 @@ Filenames are localized per language and abbreviated with the user's initials (e
 
 ## Automation & Agent Integration
 
-Bonfire is purpose-built for integration with AI agents like **OpenClaw** to create a fully automated job application workflow:
+Bonfire is purpose-built for integration with AI agents like **OpenClaw** or **Hermes** to create a fully automated job application workflow:
 
 ```
 1. Agent scrapes job boards or receives job postings
 2. Agent downloads/clips the job description text
 3. Agent invokes Bonfire:
-       python main.py --job-file /tmp/job.txt --language de
+       python main.py --file /tmp/job.txt --language de
 4. Bonfire generates all application documents
 5. Agent submits the application via the company portal or email
 ```
 
 The pipeline returns a clean result dictionary with `success`, `reason` (on failure), and output file paths, making it trivial to integrate into larger automation scripts.
+
+**Note:** Integration with AI agents hasn't been tested yet. Still, I think it is feasible.
 
 ### Programmatic Usage
 
@@ -302,19 +389,36 @@ else:
 ```
 bonfire_app/
 ├── main.py                     # CLI entry point
-├── requirements.txt            # Python dependencies
+├── config.yaml                 # Runtime configuration (models, temperatures, API)
 ├── .env                        # OPENCODE_API_KEY (not committed)
-data/
+├── requirements.txt            # Python dependencies
+│
+├── data/                       # Your working data (user-specific, ignored by git)
 │   ├── user_profile.json       # Cached structured profile (auto-generated)
 │   ├── job-history.csv         # Job application history log (auto-generated)
 │   ├── blacklist.txt           # URLs that failed scraping (auto-generated)
-│   ├── background_md/          # Your background as Markdown files
+│   ├── batch_state.json        # Batch processing state (auto-generated)
+│   ├── batch_example.txt       # Example batch list file
+│   ├── background_md/          # Your real background as Markdown files
 │   │   ├── background_deutsch.md
 │   │   ├── background_english.md
 │   │   └── background_español.md
-│   ├── fake_job_german.txt     # Example job posting (DE)
-│   ├── fake_job_english.txt    # Example job posting (EN)
-│   └── fake_job_spanish.txt    # Example job posting (ES)
+│
+├── examples/                   # Fictional example data (always committed)
+│   ├── .env.example            # Template for .env (committed)                  
+│   ├── data/background_md/     # Dummy profiles: John Smith, Johannes Schmidt, Juan Pérez
+│   │   ├── background_deutsch.md
+│   │   ├── background_english.md
+│   │   └── background_español.md
+│   ├── jobs/                   # Example job postings for testing
+│   │   ├── fake_job_english.txt
+│   │   ├── fake_job_german.txt
+│   │   └── fake_job_spanish.txt
+│   └── templates/              # Generic fallback templates
+│       ├── de/
+│       ├── en/
+│       └── es/
+│
 ├── src/
 │   ├── __init__.py
 │   ├── orchestrator.py         # Pipeline coordinator
@@ -325,7 +429,10 @@ data/
 │   ├── pptx_generator.py       # PPTX template rendering
 │   ├── llm_client.py           # LLM client (litellm wrapper)
 │   ├── models.py               # Pydantic data models
+│   ├── batch_mode.py           # Batch list parsing, state tracking, summary
+│   ├── config.py               # config.yaml loader with required-key validation
 │   └── utils.py                # Date formatting, filenames, template rendering
+│
 ├── system_prompts/              # LLM system prompts as editable Markdown templates
 │   ├── cover_letter.md
 │   ├── cv_dynamic_zones.md
@@ -333,7 +440,8 @@ data/
 │   ├── extract_job_topics.md
 │   ├── extract_job_description.md
 │   └── extract_profile.md
-├── templates/
+│
+├── templates/                   # Your real templates (user-specific, ignored by git)
 │   ├── de/                     # German templates
 │   │   ├── cover_letter_template.docx
 │   │   └── cv_template.pptx
@@ -341,13 +449,15 @@ data/
 │   │   ├── cover_letter_template.docx
 │   │   └── cv_template.pptx
 │   └── es/                     # Spanish templates
-│   │   ├── cover_letter_template.docx
-│   │   └── cv_template.pptx
+│       ├── cover_letter_template.docx
+│       └── cv_template.pptx
+│
 ├── output/                     # Generated documents (auto-created)
 ├── tests/                      # Test suite
-├── scripts/                    # Utility scripts
 └── README.md                   # This file
 ```
+
+> **Note:** Directories marked as "ignored by git" (`templates/`, `data/background_md/`) are reserved for your personal files. The `examples/` directory provides generic fallback content that is always committed. See `.gitignore` for the exact rules.
 
 ---
 
@@ -362,6 +472,11 @@ data/
 | `[location]` | Job location extracted from the posting |
 | `[greeting]` | Formal salutation (personalized or generic) |
 | `[letter_body]` | The full AI-generated cover letter text |
+| `[candidate_name]` | Your full name from `profile.personal_info.name` |
+| `[candidate_address]` | Your street address from `profile.personal_info.address` |
+| `[candidate_email]` | Your email address from `profile.personal_info.email` |
+| `[candidate_phone]` | Your phone number from `profile.personal_info.phone` |
+| `[candidate_linkedin]` | Your LinkedIn profile URL from `profile.personal_info.linkedin` |
 
 ### CV Template (`cv_template.pptx`)
 
@@ -376,7 +491,7 @@ data/
 ## Requirements
 
 - **Python**: 3.11+
-- **API Key**: Valid `OPENCODE_API_KEY` from [OpenCode](https://opencode.ai)
+- **API Key**: A valid API key from your LLM provider (e.g., [OpenCode](https://opencode.ai)). The environment variable name is configured in `config.yaml`; the example template uses `OPENCODE_API_KEY`.
 - **Operating System**: Windows, macOS, or Linux
 
 ---
@@ -404,7 +519,6 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## Acknowledgements
 
 - Built with [litellm](https://github.com/BerriAI/litellm) for model-agnostic LLM access
-- Powered by [OpenCode](https://opencode.ai) for inference
 - DOCX and PPTX manipulation via [python-docx](https://github.com/python-openxml/python-docx) and [python-pptx](https://github.com/scanny/python-pptx)
 - Data validation via [Pydantic](https://docs.pydantic.dev/)
 - URL scraping via [Jina AI Reader](https://r.jina.ai/)

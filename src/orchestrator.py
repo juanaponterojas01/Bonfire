@@ -29,6 +29,37 @@ _LANGUAGE_SUMMARY = {
     "es": "background_español.md",
 }
 
+def _resolve_template(language: str, filename: str) -> str:
+    """Resolve a template file path with fallback to examples.
+
+    Checks the primary ``templates/{language}/{filename}`` path first.
+    If that file does not exist, falls back to
+    ``examples/templates/{language}/{filename}``.
+
+    Args:
+        language: Language code (``"en"``, ``"de"``, or ``"es"``).
+        filename: The template filename (e.g. ``"cover_letter_template.docx"``).
+
+    Returns:
+        The resolved file path as a string.
+
+    Raises:
+        FileNotFoundError: If the template file does not exist in either
+            location.
+    """
+    primary = Path(f"templates/{language}/{filename}")
+    if primary.is_file():
+        return str(primary)
+
+    fallback = Path(f"examples/templates/{language}/{filename}")
+    if fallback.is_file():
+        return str(fallback)
+
+    raise FileNotFoundError(
+        f"Template '{filename}' not found for language '{language}'. "
+        f"Looked in '{primary}' and '{fallback}'."
+    )
+
 
 def _sanitize_company_name(name: str) -> str:
     """Sanitize a company name for use in a filesystem path.
@@ -52,6 +83,10 @@ def _load_or_extract_profile() -> UserProfile:
     extracted from the background Markdown directory and persisted to the
     same JSON path.
 
+    The background Markdown directory is determined by checking
+    ``data/background_md/`` first; if it is missing or empty, the
+    ``examples/data/background_md/`` fallback is used.
+
     Returns:
         The validated :class:`UserProfile` instance.
     """
@@ -59,11 +94,20 @@ def _load_or_extract_profile() -> UserProfile:
     if profile_path.exists() and profile_path.stat().st_size > 0:
         return UserProfile.model_validate_json(profile_path.read_text(encoding="utf-8"))
 
-    return extract_profile_from_md(BACKGROUND_SUMMARY_DIR, PROFILE_JSON_PATH)
+    primary_dir = Path(BACKGROUND_SUMMARY_DIR)
+    if primary_dir.is_dir() and any(primary_dir.glob("*.md")):
+        chosen_dir = str(primary_dir)
+    else:
+        chosen_dir = "examples/data/background_md/"
+
+    return extract_profile_from_md(chosen_dir, PROFILE_JSON_PATH)
 
 
 def _load_summary(language: str) -> str:
-    """Load the language-specific background summary from ``data/summary/``.
+    """Load the language-specific background summary with fallback to examples.
+
+    Checks ``data/background_md/`` first. If not found, falls back to
+    ``examples/data/background_md/``.
 
     Args:
         language: Language code (``"en"``, ``"de"``, or ``"es"``).
@@ -72,12 +116,23 @@ def _load_summary(language: str) -> str:
         The full text content of the corresponding summary file.
 
     Raises:
-        FileNotFoundError: If the summary file for the language does not exist.
+        FileNotFoundError: If the summary file for the language does not
+            exist in either location.
         KeyError: If *language* is not supported.
     """
     file_name = _LANGUAGE_SUMMARY[language]
-    summary_path = Path.cwd()/Path(BACKGROUND_SUMMARY_DIR) / file_name
-    return summary_path.read_text(encoding="utf-8")
+    primary = Path.cwd() / Path(BACKGROUND_SUMMARY_DIR) / file_name
+    if primary.is_file():
+        return primary.read_text(encoding="utf-8")
+
+    fallback = Path.cwd() / Path("examples/data/background_md") / file_name
+    if fallback.is_file():
+        return fallback.read_text(encoding="utf-8")
+
+    raise FileNotFoundError(
+        f"Summary file '{file_name}' not found for language '{language}'. "
+        f"Looked in '{primary}' and '{fallback}'."
+    )
 
 
 def _parse_job_description(job_text: str) -> JobDescription:
@@ -167,15 +222,16 @@ def run_job_pipeline(
 
         print("Creating cover letter...\n")
         cover_letter_path = render_cover_letter(
-            template_path=f"templates/{language}/cover_letter_template.docx",
+            template_path=_resolve_template(language, "cover_letter_template.docx"),
             output_path=str(output_dir / set_file_name("motiv_letter", language, profile.personal_info)),
             job=job,
             letter_body=letter_body,
             language=language,
+            profile=profile,
         )
         print("Creating cv ...\n")
         cv_path = render_cv(
-            template_path=f"templates/{language}/cv_template.pptx",
+            template_path=_resolve_template(language, "cv_template.pptx"),
             output_path=str(output_dir / set_file_name("curriculum", language, profile.personal_info)),
             dynamic_zones=dynamic_zones,
             language=language,
