@@ -12,10 +12,7 @@ jobs_to_apply/
 documents/
 .opencode/
 future_features.md
-data/batch_state.json
-data/user_profile.json
-data/job-history.csv
-data/background_md/
-templates/
+./data/
+./templates/
 job_search.md
 future_work.md

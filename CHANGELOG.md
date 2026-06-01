@@ -14,7 +14,7 @@ First public release.
 - Automatic path fallback in `src/orchestrator.py` — the pipeline transparently uses `examples/` when `templates/` or `data/background_md/` are empty, so a fresh clone runs without manual file copying.
 - `examples/` directory with tracked dummy applicant profiles (John Smith, Johannes Schmidt, Juan Pérez), generic DOCX/PPTX templates in en/de/es, three fake job postings, and an `.env.example` template.
 - MIT `LICENSE` file and `__version__ = "0.1.0"` exposed in `src/__init__.py`.
-- `data/batch_example.txt` example batch list.
+- `examples/batch_example.txt` example batch list.
 - `future_work.md` roadmap document tracking post-0.1.0 improvements.
 - Test suite expanded to 171 tests, including `tests/test_examples.py` and `tests/test_path_fallback.py` validating publication-readiness invariants.
 

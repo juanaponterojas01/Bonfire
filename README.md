@@ -270,7 +270,7 @@ python main.py --clean-output
 Process multiple job postings in a single run with automatic state tracking:
 
 ```bash
-python main.py --batch data/batch_example.txt --language en
+python main.py --batch examples/batch_example.txt --language en
 ```
 
 **Batch file format** — A plain text file with one job source per line. Each line can be a local file path or a URL. Lines starting with `#` are ignored. Maximum 15 jobs per batch.
@@ -399,14 +399,14 @@ bonfire_app/
 │   ├── job-history.csv         # Job application history log (auto-generated)
 │   ├── blacklist.txt           # URLs that failed scraping (auto-generated)
 │   ├── batch_state.json        # Batch processing state (auto-generated)
-│   ├── batch_example.txt       # Example batch list file
 │   ├── background_md/          # Your real background as Markdown files
 │   │   ├── background_deutsch.md
 │   │   ├── background_english.md
 │   │   └── background_español.md
 │
 ├── examples/                   # Fictional example data (always committed)
-│   ├── .env.example            # Template for .env (committed)                  
+│   ├── .env.example            # Template for .env (committed)
+│   ├── batch_example.txt       # Example batch list file
 │   ├── data/background_md/     # Dummy profiles: John Smith, Johannes Schmidt, Juan Pérez
 │   │   ├── background_deutsch.md
 │   │   ├── background_english.md
