@@ -16,3 +16,4 @@ data/
 templates/
 job_search.md
 future_work.md
+tests/
