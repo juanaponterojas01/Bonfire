@@ -161,15 +161,17 @@ def call_llm(
         The raw text content of the LLM response.
 
     Raises:
-        ValueError: If OPENCODE_API_KEY is missing.
+        ValueError: If the API key environment variable (named by
+            ``CONFIG.api.api_key_env``, e.g. ``OPENCODE_API_KEY``) is missing.
         RuntimeError: If the LLM call fails for any reason.
     """
     load_dotenv()
-    opencode_api_key = os.getenv("OPENCODE_API_KEY")
+    api_key_env = CONFIG.api.api_key_env
+    opencode_api_key = os.getenv(api_key_env)
 
     if not opencode_api_key:
         raise ValueError(
-            "OPENCODE_API_KEY is not set. "
+            f"{api_key_env} is not set. "
             "Please configure it in your environment or .env file."
         )
 

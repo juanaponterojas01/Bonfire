@@ -132,6 +132,7 @@ Prompts are loaded at runtime by the `render_prompt()` utility in `src/utils.py`
 | `extract_profile.md` | `profile_extractor.py` | Extract structured `UserProfile` from Markdown background files | `{relevant_fields}` |
 | `extract_job_topics.md` | `job_evaluator.py` | Select domain topics from a predefined vocabulary | `{valid_topics}` |
 | `extract_job_description.md` | `job_evaluator.py` | Extract structured `JobDescription` (title, company, location, receiver, email, topics) | `{valid_topics}` |
+| `evaluate_job_match.md` | `job_evaluator.py` | Evaluate how well a candidate profile matches a job (qualifications, gaps, strengths, recommendation) | _(none)_ |
 | `cover_letter.md` | `content_writer.py` | Generate personalized 4-paragraph cover letter body | `{text_language}`, `{job_raw_text}`, `{profile_summary}`, `{relevant_details}`, `{country}` |
 | `cv_dynamic_zones.md` | `content_writer.py` | Generate professional summary and subject descriptions for CV | `{text_language}` |
 | `email_yaml.md` | `content_writer.py` | Generate YAML-formatted application email with subject, greeting, body, farewell | `{text_language}`, `{job_raw_text}`, `{profile_json}`, `{job_title}`, `{job_email}`, `{candidate_name}` |

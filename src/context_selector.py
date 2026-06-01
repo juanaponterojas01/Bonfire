@@ -36,7 +36,6 @@ from src.models import JobDescription, ProjectSummary, Skill, UserProfile
 
 
 # Rough heuristic: 1 token ≈ 4 characters.
-# TODO: replace this constant with ``tiktoken`` for more accurate token counting.
 CHARS_PER_TOKEN = 4
 
 SECTION_SEPARATOR = "\n\n---\n\n"
