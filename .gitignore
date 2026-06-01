@@ -12,7 +12,7 @@ jobs_to_apply/
 documents/
 .opencode/
 future_features.md
-./data/
-./templates/
+data/
+templates/
 job_search.md
 future_work.md
