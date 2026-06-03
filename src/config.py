@@ -39,11 +39,25 @@ class ModelsConfig:
 
 @dataclass
 class SettingsConfig:
-    """Runtime parameters (temperature, timeout, etc.)."""
+    """Runtime parameters (temperature, timeout, token limits).
+
+    Attributes:
+        temperature_extraction: Sampling temperature for profile extraction
+            (lower = more deterministic JSON).
+        temperature_writing: Sampling temperature for cover letter / CV
+            text (higher = more creative prose).
+        timeout: Maximum time in seconds to wait for an LLM response.
+        max_tokens_extraction: Maximum output tokens for profile
+            extraction (JSON).
+        max_tokens_writing: Maximum output tokens for cover letter / CV
+            text.
+    """
 
     temperature_extraction: float = 0.2
     temperature_writing: float = 0.5
     timeout: float = 120.0
+    max_tokens_extraction: int = 8192
+    max_tokens_writing: int = 4096
 
 
 @dataclass
@@ -117,6 +131,8 @@ def _build_config(raw: dict) -> Config:
             temperature_extraction=settings_raw.get("temperature_extraction", 0.2),
             temperature_writing=settings_raw.get("temperature_writing", 0.5),
             timeout=settings_raw.get("timeout", 120.0),
+            max_tokens_extraction=settings_raw.get("max_tokens_extraction", 8192),
+            max_tokens_writing=settings_raw.get("max_tokens_writing", 4096),
         ),
     )
 

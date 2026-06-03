@@ -1,0 +1,261 @@
+{
+  "personal_info": {
+    "name": "Pepito Perez",
+    "address": "742 Maple Avenue, Apt 3B, Cambridge, MA 02139, USA",
+    "email": "pepito.perez@example.com",
+    "phone": "+1 (555) 123-4567",
+    "linkedin": "linkedin.com/in/johnsmith-mech"
+  },
+  "education": [
+    {
+      "degree": "Master of Science in Mechanical Engineering",
+      "institution": "Massachusetts Institute of Technology (MIT)",
+      "subjects": [
+        "Computational Fluid Dynamics",
+        "Turbomachinery",
+        "Renewable Energy Systems",
+        "Finite Element Methods",
+        "Advanced Thermodynamics",
+        "Control Systems",
+        "Numerical Methods for PDEs"
+      ],
+      "thesis_title": "Optimization of Vertical-Axis Wind Turbine Arrays Using Actuator-Line CFD Simulations",
+      "year": "2023"
+    },
+    {
+      "degree": "Bachelor of Science in Mechanical Engineering",
+      "institution": "University of Michigan, Ann Arbor, MI, USA",
+      "subjects": [
+        "Fluid Mechanics",
+        "Thermodynamics",
+        "Heat Transfer",
+        "Solid Mechanics",
+        "Dynamics",
+        "Machine Design",
+        "MATLAB Programming",
+        "Engineering Statistics"
+      ],
+      "thesis_title": null,
+      "year": "2020"
+    }
+  ],
+  "experience": [
+    {
+      "name": "Graduate Research Assistant — MIT Renewable Energy CFD Lab",
+      "type": "academic",
+      "role": "Graduate Research Assistant",
+      "duration": "Sep 2022 – Jun 2023",
+      "key_contribution": "Developed high-fidelity actuator-line CFD models of vertical-axis wind turbines using ANSYS Fluent with UDFs in C, and optimized array layouts for improved power density.",
+      "technologies": [
+        "ANSYS Fluent",
+        "C (UDFs)",
+        "MATLAB",
+        "Python"
+      ],
+      "topics": [
+        "cfd",
+        "turbomachines",
+        "renewable_energy",
+        "fluid_dynamics",
+        "programming"
+      ]
+    },
+    {
+      "name": "CFD Engineering Intern — Siemens Energy",
+      "type": "industry",
+      "role": "CFD Engineering Intern",
+      "duration": "Jun 2022 – Aug 2022",
+      "key_contribution": "Performed steady-state and transient CFD simulations of gas turbine cooling channels using ANSYS Fluent and CFX, validated against experimental data.",
+      "technologies": [
+        "ANSYS Fluent",
+        "ANSYS CFX",
+        "ANSYS Meshing"
+      ],
+      "topics": [
+        "cfd",
+        "thermal_simulation",
+        "fluid_dynamics",
+        "thermodynamics"
+      ]
+    },
+    {
+      "name": "Mechanical Design Intern — Vestas Wind Systems",
+      "type": "industry",
+      "role": "Mechanical Design Intern",
+      "duration": "Jun 2020 – Aug 2020",
+      "key_contribution": "Assisted in structural analysis and fatigue life assessment of wind turbine nacelle components using ANSYS Mechanical APDL and SolidWorks.",
+      "technologies": [
+        "ANSYS Mechanical APDL",
+        "SolidWorks"
+      ],
+      "topics": [
+        "mechanical_design",
+        "renewable_energy",
+        "turbomachines"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "category": "software",
+      "name": "ANSYS Fluent",
+      "proficiency": "expert"
+    },
+    {
+      "category": "software",
+      "name": "ANSYS CFX",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "ANSYS Mechanical APDL",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "ANSYS Meshing",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "SolidWorks",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "AutoCAD",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "Python",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "MATLAB",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "C (UDFs)",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "software",
+      "name": "Bash / Shell Scripting",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "technical",
+      "name": "RANS / URANS Turbulence Modeling",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "technical",
+      "name": "Actuator-Line / Actuator-Disk Methods",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "technical",
+      "name": "Conjugate Heat Transfer",
+      "proficiency": "intermediate"
+    },
+    {
+      "category": "technical",
+      "name": "Mesh Generation & Optimization",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "Git / GitHub",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "Linux / HPC Clusters",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "LaTeX",
+      "proficiency": "advanced"
+    },
+    {
+      "category": "software",
+      "name": "Microsoft Office Suite",
+      "proficiency": "expert"
+    },
+    {
+      "category": "language",
+      "name": "English",
+      "proficiency": "expert"
+    },
+    {
+      "category": "language",
+      "name": "German",
+      "proficiency": "intermediate"
+    }
+  ],
+  "projects": [
+    {
+      "name": "VAWT Array Wake Optimization (Master's Thesis)",
+      "type": "thesis",
+      "role": "Lead Researcher",
+      "duration": "Sep 2022 – Jun 2023",
+      "key_contribution": "Developed actuator-line CFD models for vertical-axis wind turbines and applied genetic algorithm optimization to achieve 15% higher power density.",
+      "technologies": [
+        "ANSYS Fluent",
+        "MATLAB",
+        "Python",
+        "C (UDFs)",
+        "HPC Cluster (SLURM)"
+      ],
+      "topics": [
+        "cfd",
+        "turbomachines",
+        "renewable_energy",
+        "fluid_dynamics",
+        "programming"
+      ]
+    },
+    {
+      "name": "Solar-Powered Water Pump for Rural Communities (B.Sc. Capstone)",
+      "type": "academic",
+      "role": "Mechanical Design Lead",
+      "duration": "Jan 2020 – May 2020",
+      "key_contribution": "Designed a low-cost solar-powered centrifugal water pump using SolidWorks and MATLAB, achieving 60% efficiency with estimated unit cost under $150.",
+      "technologies": [
+        "SolidWorks",
+        "MATLAB",
+        "ANSYS Mechanical"
+      ],
+      "topics": [
+        "mechanical_design",
+        "renewable_energy",
+        "fluid_dynamics"
+      ]
+    },
+    {
+      "name": "Open-Source Wind Turbine Performance Analyzer (Personal Project)",
+      "type": "academic",
+      "role": "Sole Developer",
+      "duration": "Oct 2023 – Present",
+      "key_contribution": "Building a web-based tool for BEM calculations of small wind turbines with REST API and interactive frontend.",
+      "technologies": [
+        "Python",
+        "NumPy",
+        "Pandas",
+        "Matplotlib",
+        "Flask",
+        "Git",
+        "CI/CD (GitHub Actions)"
+      ],
+      "topics": [
+        "programming",
+        "renewable_energy",
+        "fluid_dynamics"
+      ]
+    }
+  ]
+}

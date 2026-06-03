@@ -66,6 +66,7 @@ def call_llm_parsed(
     response_model: type[BaseModel],
     model: str = CONFIG.models.extraction_model,
     temperature: float = 0.2,
+    max_tokens: int | None = None,
     max_retries: int = 1,
     timeout: float = CONFIG.settings.timeout,
 ) -> BaseModel:
@@ -81,6 +82,8 @@ def call_llm_parsed(
         response_model: The Pydantic model to validate against.
         model: Model identifier constant.
         temperature: Sampling temperature.
+        max_tokens: Maximum number of tokens in the response. None means
+            model default (no limit).
         max_retries: Number of retries on parse failure (default 1).
         timeout: Maximum time in seconds to wait for each LLM call.
 
@@ -98,6 +101,7 @@ def call_llm_parsed(
             user_prompt=user_prompt,
             model=model,
             temperature=temperature,
+            max_tokens=max_tokens,
             response_model=response_model,
             timeout=timeout,
         )
@@ -143,6 +147,7 @@ def call_llm(
     user_prompt: str,
     model: str = CONFIG.models.extraction_model,
     temperature: float = 0.2,
+    max_tokens: int | None = None,
     response_model: type[BaseModel] | None = None,
     timeout: float = CONFIG.settings.timeout,
 ) -> str:
@@ -153,6 +158,8 @@ def call_llm(
         user_prompt: The user-level prompt text.
         model: Model identifier constant (EXTRACTION_MODEL or WRITER_MODEL).
         temperature: Sampling temperature.
+        max_tokens: Maximum number of tokens in the response. None means
+            model default (no limit).
         response_model: Optional Pydantic model whose JSON schema will be
             appended to the system prompt to enforce structured output.
         timeout: Maximum time in seconds to wait for a response.
@@ -185,6 +192,7 @@ def call_llm(
                 {"role": "user", "content": user_prompt},
             ],
             temperature=temperature,
+            max_tokens=max_tokens,
             api_base=CONFIG.api.base_url,
             api_key=opencode_api_key,
             timeout=timeout,

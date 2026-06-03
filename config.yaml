@@ -10,3 +10,5 @@ settings:
   temperature_extraction: 0.2
   temperature_writing: 0.5
   timeout: 180.0
+  max_tokens_extraction: 8200  # LLM output token limit for profile extraction (JSON)
+  max_tokens_writing: 4100    # LLM output token limit for cover letter / CV text

@@ -106,6 +106,7 @@ def extract_profile_from_md(md_source: str, output_json_path: str) -> UserProfil
         user_prompt=user_prompt,
         model=CONFIG.models.extraction_model,
         temperature=0.2,
+        max_tokens=CONFIG.settings.max_tokens_extraction,
         response_model=UserProfile,
     )
 

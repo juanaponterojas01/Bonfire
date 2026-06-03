@@ -151,13 +151,15 @@ models:
 
 Edit `config.yaml` to switch to any model available via your LLM provider API key (for instance OpenCode), based on the OpenAI API call structure. The extraction model should be good at following schemas; the writer model should be good at natural prose and also at multilingual tasks if you want to create applications in other languages. It is also strongly recommended to use fast models, so the timeout limit of the API call is harder to hit and because it allows faster automation when batch mode is being used to create multiple job applications.
 
-You can also adjust the generation temperature for each model:
+You can also adjust the generation temperature and token limits for each model:
 
 ```yaml
 settings:
   temperature_extraction: 0.2    # Lower = more deterministic JSON output
   temperature_writing: 0.5       # Higher = more creative prose
   timeout: 120.0                 # LLM request timeout in seconds
+  max_tokens_extraction: 8200    # Max output tokens for profile extraction (JSON)
+  max_tokens_writing: 4100       # Max output tokens for cover letter / CV text
 ```
 
 ### 4. Background Data

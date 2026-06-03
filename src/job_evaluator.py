@@ -54,6 +54,7 @@ def extract_job_topics(raw_text: str) -> list[str]:
         response_model=TopicsResponse,
         model=CONFIG.models.extraction_model,
         temperature=0.1,
+        max_tokens=CONFIG.settings.max_tokens_extraction,
     )
 
     return [t for t in result.topics if t in VALID_TOPICS]
@@ -84,6 +85,7 @@ def extract_job_description(raw_text: str) -> JobDescription:
         response_model=JobDescription,
         model=CONFIG.models.extraction_model,
         temperature=0.1,
+        max_tokens=CONFIG.settings.max_tokens_extraction,
     )
 
     job = job.model_copy(update={"raw_text": raw_text})
@@ -121,5 +123,6 @@ def evaluate_job_match(job: JobDescription, profile: UserProfile) -> JobMatchRes
         response_model=JobMatchResult,
         model=CONFIG.models.extraction_model,
         temperature=0.2,
+        max_tokens=CONFIG.settings.max_tokens_extraction,
     )
 

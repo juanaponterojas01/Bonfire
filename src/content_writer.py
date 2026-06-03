@@ -83,8 +83,8 @@ def generate_cover_letter(
         user_prompt=user_prompt,
         model=CONFIG.models.writer_model,
         temperature=CONFIG.settings.temperature_writing,
+        max_tokens=CONFIG.settings.max_tokens_writing,
     )
-
 
 def generate_cv_dynamic_zones(
     job: JobDescription,
@@ -157,6 +157,7 @@ def generate_cv_dynamic_zones(
         response_model=CVDynamicZones,
         model=CONFIG.models.extraction_model,
         temperature=CONFIG.settings.temperature_extraction,
+        max_tokens=CONFIG.settings.max_tokens_extraction,
         timeout=CONFIG.settings.timeout,
     )
 
@@ -223,4 +224,6 @@ def generate_email_yaml(
         user_prompt=user_prompt,
         model=CONFIG.models.writer_model,
         temperature=CONFIG.settings.temperature_writing,
+        max_tokens=CONFIG.settings.max_tokens_writing,
     )
+
