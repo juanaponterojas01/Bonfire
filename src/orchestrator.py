@@ -75,7 +75,7 @@ def _sanitize_company_name(name: str) -> str:
     return sanitized if sanitized else "unknown_company"
 
 
-def _load_or_extract_profile() -> UserProfile:
+def _load_or_extract_profile(language: str = "de") -> UserProfile:
     """Load the user profile from JSON or extract it from Markdown files.
 
     Checks whether ``data/user_profile.json`` exists and is non-empty. If so,
@@ -83,24 +83,68 @@ def _load_or_extract_profile() -> UserProfile:
     extracted from the background Markdown directory and persisted to the
     same JSON path.
 
+    When multiple Markdown files are present, only the file matching the
+    requested *language* is used (e.g. ``background_english.md`` for
+    ``language="en"``).  This prevents the LLM from merging translations
+    or different personas into a single profile.
+
     The background Markdown directory is determined by checking
     ``data/background_md/`` first; if it is missing or empty, the
     ``examples/data/background_md/`` fallback is used.
 
+    Args:
+        language: Language code (``"en"``, ``"de"``, or ``"es"``).
+
     Returns:
         The validated :class:`UserProfile` instance.
+
+    Raises:
+        FileNotFoundError: If no suitable Markdown file can be found for
+            the given *language*.
     """
     profile_path = Path(PROFILE_JSON_PATH)
     if profile_path.exists() and profile_path.stat().st_size > 0:
         return UserProfile.model_validate_json(profile_path.read_text(encoding="utf-8"))
 
-    primary_dir = Path(BACKGROUND_SUMMARY_DIR)
-    if primary_dir.is_dir() and any(primary_dir.glob("*.md")):
-        chosen_dir = str(primary_dir)
-    else:
-        chosen_dir = "examples/data/background_md/"
+    def _pick_source(directory: Path) -> Path | None:
+        """Return the most appropriate Markdown source for *language*."""
+        if not directory.is_dir():
+            return None
+        md_files = sorted(directory.glob("*.md"))
+        if not md_files:
+            return None
 
-    return extract_profile_from_md(chosen_dir, PROFILE_JSON_PATH)
+        # Prefer the file that matches the requested language.
+        target_name = _LANGUAGE_SUMMARY.get(language)
+        if target_name:
+            for path in md_files:
+                if path.name == target_name:
+                    return path
+
+        # Backward compatibility: if exactly one file exists, use it.
+        if len(md_files) == 1:
+            return md_files[0]
+
+        # Ambiguous — raise a clear error.
+        available = ", ".join(p.name for p in md_files)
+        raise FileNotFoundError(
+            f"Multiple background Markdown files found in '{directory}' "
+            f"({available}) and none matches the requested language "
+            f"('{language}'). Please either create '{target_name}', "
+            f"keep only one .md file, or provide 'data/user_profile.json'."
+        )
+
+    source = _pick_source(Path(BACKGROUND_SUMMARY_DIR))
+    if source is None:
+        source = _pick_source(Path("examples/data/background_md"))
+    if source is None:
+        raise FileNotFoundError(
+            f"No background Markdown files found for language '{language}'. "
+            f"Looked in '{BACKGROUND_SUMMARY_DIR}' and "
+            f"'examples/data/background_md/'."
+        )
+
+    return extract_profile_from_md(str(source), PROFILE_JSON_PATH)
 
 
 def _load_summary(language: str) -> str:
@@ -178,7 +222,7 @@ def run_job_pipeline(
         print("loading and parsing job description, and reading background...\n")
         with ThreadPoolExecutor(max_workers=3) as executor:
             if profile is None:
-                future_profile = executor.submit(_load_or_extract_profile)
+                future_profile = executor.submit(_load_or_extract_profile, language)
             future_job = executor.submit(_parse_job_description, job_text)
             future_summary = executor.submit(_load_summary, language)
 

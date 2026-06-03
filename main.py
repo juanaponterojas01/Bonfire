@@ -128,7 +128,7 @@ def main() -> None:
 
         from src.orchestrator import _load_or_extract_profile
         from src.job_scraper import fetch_job_text
-        profile = _load_or_extract_profile()
+        profile = _load_or_extract_profile(args.language)
 
         total = len(sources)
         success = 0

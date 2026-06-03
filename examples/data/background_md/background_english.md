@@ -1,6 +1,6 @@
-# John Smith
+# Pepito Perez
 
-**Email:** john.smith@example.com  
+**Email:** pepito.perez@example.com  
 **Phone:** +1 (555) 123-4567  
 **Address:** 742 Maple Avenue, Apt 3B, Cambridge, MA 02139, USA  
 **LinkedIn:** linkedin.com/in/johnsmith-mech

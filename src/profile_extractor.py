@@ -21,26 +21,34 @@ RELEVANT_FIELDS = [
 ]
 
 
-def _read_md_files(md_directory: str) -> dict[str, str]:
-    """Read all .md files in *md_directory* and return a mapping of filename -> content.
+def _read_md_files(md_source: str) -> dict[str, str]:
+    """Read all .md files from *md_source* and return a mapping of filename -> content.
+
+    *md_source* may be either a directory or a single ``.md`` file path.
+    When a directory is given, every ``.md`` file inside it is read.  When a
+    file is given, only that file is read.
 
     Each file's stem (filename without the ``.md`` extension) is used as the
     key in the returned dictionary.
 
     Args:
-        md_directory: Absolute or relative path to the directory containing
-            ``.md`` files.
+        md_source: Absolute or relative path to a directory containing
+            ``.md`` files, or to a single ``.md`` file.
 
     Returns:
         A dictionary mapping each filename stem to its full text content.
 
     Raises:
-        FileNotFoundError: When the directory contains no ``.md`` files.
+        FileNotFoundError: When *md_source* does not exist or contains no
+            ``.md`` files.
     """
-    md_dir = Path(md_directory)
-    md_paths = sorted(md_dir.glob("*.md"))
+    md_path = Path(md_source)
+    if md_path.is_file() and md_path.suffix == ".md":
+        return {md_path.stem: md_path.read_text(encoding="utf-8")}
+
+    md_paths = sorted(md_path.glob("*.md"))
     if not md_paths:
-        raise FileNotFoundError(f"No .md files found in directory: {md_directory}")
+        raise FileNotFoundError(f"No .md files found in directory: {md_source}")
 
     return {
         path.stem: path.read_text(encoding="utf-8")
@@ -64,16 +72,17 @@ def _build_extraction_prompt(md_contents: dict[str, str]) -> str:
     return header + "\n\n---\n\n".join(sections)
 
 
-def extract_profile_from_md(md_directory: str, output_json_path: str) -> UserProfile:
-    """Extract a UserProfile from all Markdown files in a directory.
+def extract_profile_from_md(md_source: str, output_json_path: str) -> UserProfile:
+    """Extract a UserProfile from Markdown background file(s).
 
-    Reads every ``.md`` file in *md_directory*, builds an extraction prompt
-    from their contents, calls the LLM with a structured output schema, and
-    persists the validated result to the given JSON path.
+    Reads ``.md`` file(s) from *md_source* (a directory or a single file),
+    builds an extraction prompt from their contents, calls the LLM with a
+    structured output schema, and persists the validated result to the given
+    JSON path.
 
     Args:
-        md_directory: Path to a directory containing ``.md`` files with
-            candidate background information.
+        md_source: Path to a directory containing ``.md`` files, or to a
+            single ``.md`` file with candidate background information.
         output_json_path: Filesystem path where the validated profile will
             be written as pretty-printed JSON.
 
@@ -81,12 +90,12 @@ def extract_profile_from_md(md_directory: str, output_json_path: str) -> UserPro
         The validated :class:`UserProfile` instance.
 
     Raises:
-        FileNotFoundError: If *md_directory* does not exist or contains no
+        FileNotFoundError: If *md_source* does not exist or contains no
             ``.md`` files (propagated from :func:`_read_md_files`).
         ValidationError: If the LLM output does not conform to the
             :class:`UserProfile` schema (propagated from Pydantic).
     """
-    md_contents = _read_md_files(md_directory)
+    md_contents = _read_md_files(md_source)
     user_prompt = _build_extraction_prompt(md_contents)
 
     profile = call_llm_parsed(

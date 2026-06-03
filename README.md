@@ -171,7 +171,7 @@ Your professional background is stored in `data/background_md/`. Create one Mark
 The project ships with ready-to-use example data so you can test the pipeline immediately without any setup beyond your API key.
 
 - **`examples/`** — Contains fictional applicant profiles and generic DOCX/PPTX templates for all three supported languages.
-  - `examples/data/background_md/` — Dummy background files for **John Smith** (EN), **Johannes Schmidt** (DE), and **Juan Pérez** (ES).
+  - `examples/data/background_md/` — Dummy background files for **Pepito Perez** in English, German, and Spanish.
   - `examples/templates/` — Generic cover letter and CV templates with all the required `[placeholder]` strings.
 - **`templates/`** and **`data/background_md/`** — These directories are for **your** real templates and background files. They are ignored by git (see `.gitignore`).
 
@@ -221,7 +221,7 @@ python main.py --file examples/jobs/fake_job_english.txt --language en
 ```
 
 This will:
-1. Load the dummy profile for **John Smith** from the example background files (automatic fallback).
+1. Load the dummy profile for **Pepito Perez** from the example background files (automatic fallback).
 2. Parse the fake English job posting for a "Senior CFD Engineer" position.
 3. Generate a tailored cover letter and CV.
 4. Save the output to `output/` using the generic example templates.
@@ -407,7 +407,7 @@ bonfire_app/
 ├── examples/                   # Fictional example data (always committed)
 │   ├── .env.example            # Template for .env (committed)
 │   ├── batch_example.txt       # Example batch list file
-│   ├── data/background_md/     # Dummy profiles: John Smith, Johannes Schmidt, Juan Pérez
+│   ├── data/background_md/     # Dummy profile: Pepito Perez (EN / DE / ES)
 │   │   ├── background_deutsch.md
 │   │   ├── background_english.md
 │   │   └── background_español.md
